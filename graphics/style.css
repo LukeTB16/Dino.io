@@ -4,3 +4,6 @@ body {
     background-attachment: fixed;
     background-size: 100% 100%;
 }
+h1 {
+    text-align: center;
+}
