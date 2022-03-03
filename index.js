@@ -28,7 +28,6 @@ function getPosition(elem){
 
     return dims;
 }
-
 var checkLose = setInterval(function(){
     var dino_top = parseInt(window.getComputedStyle(dino).getPropertyValue("top"));
     var block_left = parseInt(window.getComputedStyle(block).getPropertyValue("left"));
@@ -37,7 +36,7 @@ var checkLose = setInterval(function(){
             block.style.display = "none";
             alert("HAI PERSO !");
     }
-})
+});
 document.documentElement.style.setProperty('--block-start', field_width);
 var fieldPositionInfo = field.getBoundingClientRect();
 var field_height = fieldPositionInfo.height;
@@ -46,8 +45,15 @@ block.style.setProperty('--block-start', field_width + "px");
 block.style.setProperty('top', field_height-20 + "px");
 //setInterval(function(){console.log(getPosition(block));}, 50);
 //setInterval(function(){console.log(getPosition(dino));}, 50);
+document.documentElement.style.setProperty('--dino-jump1', 100 + "px");
+document.documentElement.style.setProperty('--dino-jump2', 100 + "px");
+document.documentElement.style.setProperty('--dino-jump3', 100 + "px");
 
-document.addEventListener('long-press', function(e) {
-    e.target.setAttribute('data-editing', 'true');
-    console.log("Sono stato pressato !");
-  });
+document.addEventListener('long-press', jump_high);
+function jump_high() {
+    document.documentElement.style.setProperty('--dino-jump1', 80 + "px");
+    document.documentElement.style.setProperty('--dino-jump2', 70 + "px");
+    document.documentElement.style.setProperty('--dino-jump3', 80 + "px");
+    console.log("PRESSING!");
+    document.removeEventListener('long-press', jump_high); /* NON FUNZIONA !*/
+}

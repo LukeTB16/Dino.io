@@ -29,7 +29,7 @@ body {
 
 @keyframes block {
     0% {left: var(--block-start);}
-    100% {left: 0px;}
+    100% {left: 10px;}
 }
 
 #dino {
@@ -47,8 +47,9 @@ body {
 
 @keyframes jump {
     0% {top: 150px;}
-    30% {top: 100px;}
-    70% {top: 100px;}
+    30% {top: var(--dino-jump1);} /* 100px */
+    50% {top: var(--dino-jump2);} /* 100px */
+    70% {top: var(--dino-jump3);} /* 100px */
     100% {top: 150px;}
 }
 
