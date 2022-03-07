@@ -12,11 +12,6 @@ body {
 }
 */
 
-#canvas {
-    border: 1px solid #d3d3d3;
-    background-color: #f1f1f1;
-  }
-
 #block {
     width:20px;
     height: 20px;
@@ -25,22 +20,3 @@ body {
     position: absolute;
 }
 
-
-#dino {
-    width: 20px;
-    height: 50px;
-    background-color: red;
-    position: relative;
-    top: 150px;
-    left: 125px;
-    position: absolute;
-}
-
-
-
-/*
-#canvas {
-    border: 1px solid #d3d3d3;
-    background-color: #f1f1f1;
-  }
-*/
