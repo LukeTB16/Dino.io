@@ -43,7 +43,7 @@ const keyboard_keys = (function(){
 })();
 // Define world
 const world = {
-  gravity: 0.9, // strength per frame of gravity
+  gravity: 0.79, // strength per frame of gravity
   ground: 150,
 }
 
@@ -75,7 +75,7 @@ const dino = {
       this.onGround = false;
     }
   },
-  draw(x_g, y_g){
+  draw(){
     /*
     var dino_img = new Image();
     dino_img.onload = function(){
@@ -83,7 +83,7 @@ const dino = {
     
     dino_img.src = 'graphics/dino.png';
     */
-    drawRect(x_g, y_g, this.size, this.size, '#00ff00');
+    drawRect(this.x+200, this.y+24, this.size, this.size, '#00ff00');
   },
   start(){
     this.y = world.ground - this.size;
@@ -92,8 +92,38 @@ const dino = {
     this.dy = 0;
   }
 }
+const obstacle = {
+  x: 0,
+  y: 0,
+  dx: 0,
+  dy: 0, // move distance
+  size: 80,
+  onGround: false,
+  speed: 0.02,
+  game(){
+    // define gravity rules
+    this.dx = this.dx - this.speed;
+    this.x = this.x + this.dx;
+
+    // ground contact
+    if (this.y + this.size >= world.ground) {
+      this.y = world.ground - this.size;
+      this.onGround = true;
+    } else {
+      this.onGround = false;
+    }
+  },
+  draw(){
+    drawRect(this.x+1020, this.y+24, this.size, this.size, 'blue');
+  },
+  start(){
+    this.y = world.ground - this.size;
+    this.onGround = true;
+  }
+}
 
 dino.start();
+obstacle.start();
 requestAnimationFrame(main); // start when ready
 
 function drawRect(x, y, width, height, color){
@@ -104,18 +134,19 @@ function drawRect(x, y, width, height, color){
   design_field.closePath();
 }
 function drawGround(x, y) {
-  drawRect(x, y, 1000, 150, '#684027');
-  drawRect(x, y, 1000, 20, 'green');
+  drawRect(x, y, 1000, 150, '#684027'); // terrain
+  drawRect(x, y, 1000, 20, 'green'); // ground
 }
 
 function main(){
   var x_global = 100;
   var y_global = 175;
-  var y_dino = y_global - 40;
   design_field.clearRect(0, 0, field.width, field.height);
   drawGround(x_global, y_global);
-  dino.draw(x_global, y_dino);
+  dino.draw();
   dino.game();
+  obstacle.game();
+  obstacle.draw();
   requestAnimationFrame(main);
 }
 window.focus(); // sure focus per keyboard input
