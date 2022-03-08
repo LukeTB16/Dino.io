@@ -97,7 +97,7 @@ const obstacle = {
   y: 0,
   dx: 0,
   dy: 0, // move distance
-  size: 80,
+  size: 60,
   onGround: false,
   speed: 0.02,
   game(){
@@ -121,11 +121,12 @@ const obstacle = {
     this.onGround = true;
   }
 }
-
 dino.start();
 obstacle.start();
 requestAnimationFrame(main); // start when ready
-
+function updateGameOb(){
+  
+}
 function drawRect(x, y, width, height, color){
   design_field.beginPath();
   design_field.rect(x, y, width, height);
