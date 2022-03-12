@@ -114,20 +114,6 @@ const dino = {
         this.frameWidth-240,
         this.frameHeight-200);
     }
-    /*
-    this.draw = function() {
-      var fc = this.idleSprite.frameCount;
-      var currentFrame = 0 | (((new Date()).getTime()) * (fc/1000)) % fc;
-      c.drawImage(this.idleSprite, 
-        this.idleSprite.frameWidth * currentFrame, 
-        0, 
-        this.idleSprite.frameWidth, 
-        this.idleSprite.frameHeight, 
-        0, 
-        0, 
-        this.idleSprite.frameWidth, 
-        this.idleSprite.frameHeight);
-    } */
   },
   start(){
     this.y = world.ground - this.size;
