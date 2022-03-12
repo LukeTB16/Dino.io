@@ -1,7 +1,26 @@
 var field = document.getElementById("field");
 var design_field = field.getContext("2d"); // return 2d drawing context on the field
+var time;
 //var dyno = document.getElementById("dino");
 //var design_dino = dyno.getContext("2d");
+
+// Dino image
+var dinoReady = false;
+const dinoImage = new Image();
+dinoImage.onload = function(){
+  dinoReady = true;
+}
+dinoImage.src = "graphics/dino_sprites.png";
+
+// Obstacle image
+
+// Ground image
+var groundReady = false;
+const groundImage = new Image();
+groundImage.onload = function(){
+  groundReady = true;
+}
+groundImage.src = "graphics/ground.png";
 
 // Define keyboard keys
 const keyboard_keys = (function(){
@@ -13,7 +32,7 @@ const keyboard_keys = (function(){
     up: false,
     any: false
   };
-  var time;
+
   function keyDownHandler(e) {
     if (e.keyCode == 38){
       time = Date.now();
@@ -41,6 +60,7 @@ const keyboard_keys = (function(){
   }
   return keyboard_keys;
 })();
+
 // Define world
 const world = {
   gravity: 0.79, // strength per frame of gravity
@@ -53,10 +73,14 @@ const dino = {
   y: 0,
   dx: 0,
   dy: 0, // move distance
-  size: 40,
+  size: 200,
+  frameWidth: 519,
+  frameHeight: 413,
+  frameCount: 18,
   onGround: false,
   jumpHeight: -14,
   game(){
+    dinoReady = true;
     if(keyboard_keys.down == true && this.onGround == true){
       this.dy = this.jumpHeight;
     }
@@ -76,20 +100,60 @@ const dino = {
     }
   },
   draw(){
+    if(dinoReady){
+      const fc = this.frameCount;
+      var currentFrame = 0 | (((new Date()).getTime()) * (fc/1000)) % fc;
+      design_field.drawImage(
+        dinoImage, 
+        this.frameWidth * currentFrame,
+        0, 
+        this.frameWidth,
+        this.frameHeight,
+        150,
+        100,
+        this.frameWidth-240,
+        this.frameHeight-200);
+    }
     /*
-    var dino_img = new Image();
-    dino_img.onload = function(){
-      design_dino.drawImage(dino_img, 50, 0, 50, 50);
-    
-    dino_img.src = 'graphics/dino.png';
-    */
-    drawRect(this.x+200, this.y+24, this.size, this.size, '#00ff00');
+    this.draw = function() {
+      var fc = this.idleSprite.frameCount;
+      var currentFrame = 0 | (((new Date()).getTime()) * (fc/1000)) % fc;
+      c.drawImage(this.idleSprite, 
+        this.idleSprite.frameWidth * currentFrame, 
+        0, 
+        this.idleSprite.frameWidth, 
+        this.idleSprite.frameHeight, 
+        0, 
+        0, 
+        this.idleSprite.frameWidth, 
+        this.idleSprite.frameHeight);
+    } */
   },
   start(){
     this.y = world.ground - this.size;
     this.onGround = true;
     this.dx = 0;
     this.dy = 0;
+  }
+}
+
+const ground = {
+  x: 0,
+  y: 0,
+  dx: 0,
+  dy: 0,
+  height: 200,
+  weight: 900,
+  onGround: false,
+  draw(){
+    if(groundReady){
+      design_field.drawImage(
+        groundImage, this.x+100, this.y+190, this.weight, this.height);
+    }
+  },
+  start(){
+    this.y = world.ground - this.size;
+    this.onGround = true;
   }
 }
 const obstacle = {
@@ -104,17 +168,9 @@ const obstacle = {
     // define gravity rules
     this.dx = this.dx - this.speed;
     this.x = this.x + this.dx;
-
-    // ground contact
-    if (this.y + this.size >= world.ground) {
-      this.y = world.ground - this.size;
-      this.onGround = true;
-    } else {
-      this.onGround = false;
-    }
   },
   draw(){
-    drawRect(this.x+1020, this.y+24, this.size, this.size, 'blue');
+
   },
   start(){
     this.y = world.ground - this.size;
@@ -124,26 +180,10 @@ const obstacle = {
 dino.start();
 obstacle.start();
 requestAnimationFrame(main); // start when ready
-function updateGameOb(){
-  
-}
-function drawRect(x, y, width, height, color){
-  design_field.beginPath();
-  design_field.rect(x, y, width, height);
-  design_field.fillStyle = color;
-  design_field.fill();
-  design_field.closePath();
-}
-function drawGround(x, y) {
-  drawRect(x, y, 1000, 150, '#684027'); // terrain
-  drawRect(x, y, 1000, 20, 'green'); // ground
-}
 
 function main(){
-  var x_global = 100;
-  var y_global = 175;
   design_field.clearRect(0, 0, field.width, field.height);
-  drawGround(x_global, y_global);
+  ground.draw();
   dino.draw();
   dino.game();
   obstacle.game();
@@ -151,3 +191,15 @@ function main(){
   requestAnimationFrame(main);
 }
 window.focus(); // sure focus per keyboard input
+function getStartPosition(e) {
+    document.querySelector("#x1").textContent = e.clientX;
+    document.querySelector("#y1").textContent = e.clientY;
+}
+
+function getEndPosition(e) {
+    document.querySelector("#x2").textContent = e.clientX;
+    document.querySelector("#y2").textContent = e.clientY;
+}
+
+document.addEventListener("mousedown", getStartPosition);
+document.addEventListener("mouseup", getEndPosition);
