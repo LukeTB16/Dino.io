@@ -13,7 +13,6 @@ dinoImage.src = "graphics/dino_sprites.png";
 // Obstacle image
 
 // Ground image
-var groundReady = false;
 const groundImage = new Image();
 groundImage.onload = function(){
   groundReady = true;
@@ -66,9 +65,9 @@ const dino = {
   frameWidth: 519,
   frameHeight: 413,
   frameCount: 18,
-  jumpPower: -10,
-  gravity: 1,
-  drag: 0.899,
+  jumpPower: -18,
+  gravity: 0.9,
+  drag: 0.9,
   game(){
     dinoReady = true;
     if(keyboard_keys.down == true){
@@ -115,12 +114,18 @@ const ground = {
   x: 0,
   y: 190,
   height: 200,
-  weight: 2100,
-  onGround: false,
+  width: 2100,
+  speed: 6,
   draw(){
-    if(groundReady){
-      design_field.drawImage(
-        groundImage, this.x, this.y, this.weight, this.height);
+    design_field.drawImage(groundImage, 
+    this.x, this.y - this.speed, this.width, this.height);
+    design_field.drawImage(groundImage, 
+    this.x + this.width, this.y - this.speed, this.width, this.height);
+  },
+  update(){
+    this.x = this.x - this.speed;
+    if(this.x < 0 - this.width){
+      this.x = 0;
     }
   }
 }
@@ -140,6 +145,7 @@ requestAnimationFrame(main); // start when ready
 function main(){
   design_field.clearRect(0, 0, field.width, field.height);
   ground.draw();
+  ground.update();
   dino.game();
   dino.draw();
   requestAnimationFrame(main);
