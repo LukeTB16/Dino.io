@@ -12,11 +12,7 @@ body {
 }
 */
 
-#block {
-    width:20px;
-    height: 20px;
-    background-color: blue;
-    /*animation: block 2s linear infinite;  linear per avere velocità costante */
-    position: absolute;
+#field {
+    padding-left: 0px;
+    margin-left: 0px;
 }
-
