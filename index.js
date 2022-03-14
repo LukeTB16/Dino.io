@@ -11,12 +11,15 @@ dinoImage.onload = function(){
 dinoImage.src = "graphics/dino_sprites.png";
 
 // Obstacle image
+var obstacleReady = false;
+const obstacleImage = new Image();
+obstacleImage.onload = function(){
+  obstacleReady = true;
+}
+dinoImage.src = "graphics/obstacle.png";
 
 // Ground image
 const groundImage = new Image();
-groundImage.onload = function(){
-  groundReady = true;
-}
 groundImage.src = "graphics/ground.png";
 
 // Define keyboard keys
@@ -93,7 +96,7 @@ const dino = {
         this.frameHeight * frameY,
         this.frameWidth+120,
         this.frameHeight+120,
-        this.dx+100,
+        this.dx+150,
         this.dy+100,
         this.frameWidth-200,
         this.frameHeight-150);
