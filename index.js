@@ -1,10 +1,10 @@
-var canvas = document.getElementById("canvas");
-var design = canvas.getContext("2d"); // return 2d drawing context on the field
-var time;
 //design.canvas.width = window.innerWidth;
 //design.canvas.height = window.innerHeight;
-var vite = 3;
-var score = 0;
+// CONTEXT DECLARATION
+var canvas = document.getElementById("canvas");
+var design = canvas.getContext("2d"); // return 2d drawing context on the field
+
+// IMAGE DECLARATIONS
 // Dino image
 var dinoReady = false;
 const dinoImage = new Image();
@@ -12,24 +12,12 @@ dinoImage.onload = function(){
   dinoReady = true;
 }
 dinoImage.src = "graphics/dino_sprites.png";
-
 // Obstacle images
 const obstacle1Image = new Image();
 obstacle1Image.src = "graphics/obstacles/obstacle.png";
-
-/*
-const obstacle2Image = new Image();
-obstacle2Image.src = "graphics/obstacles/obstacle2.png";
-const obstacle3Image = new Image();
-obstacle3Image.src = "graphics/obstacles/obstacle3.png";
-const obstacle4Image = new Image();
-obstacle4Image.src = "graphics/obstacles/obstacle4.png";
-*/
-
 // Ground image
 const groundImage = new Image();
 groundImage.src = "graphics/ground.png";
-
 // Background image
 const backgroundImage = new Image();
 backgroundImage.src = "graphics/back.jpg";
@@ -66,22 +54,23 @@ const keyboard_keys = (function(){
   return keyboard_keys;
 })();
 
-function draw_text() {
-  design.font = '80px Secular One';
-  design.fillText('Vite rimaste: ' + vite, window.innerWidth/2-310, window.innerHeight/2-200);
-  design.fillText('Score: ' + score, window.innerWidth/2-310, window.innerHeight/2-100);
-}
-
+// Needed declarations
+var time;
+var collision = true;
 let obstXPos;
 let obstYPos;
 let dinoXPos;
 let dinoYPos;
 let frameX = 0; // coordinates to take frames of sprite
-let frameY = 0; // must be 0 bc we have sprites in same line
+let frameY = 0; // must be 0 bc we have sprites in same line in this case
 let gameFrame = 0;
 const shakeFrame = 6;
 let jump_counter = 0;
 let gameOver = false;
+var distance;
+var sumOfRadii;
+
+
 // Define dino
 const dino = {
   x: 0,
@@ -96,6 +85,8 @@ const dino = {
   drag: 0.9,
   width: 109,
   height: 133,
+  score: 0,
+  lifes: 3,
   game(){
     dinoReady = true;
     this.x = this.dx+150
@@ -119,30 +110,54 @@ const dino = {
       this.dy = 0;
     }
   },
-  checkCollision(obstacle){
+  checkCollision(){
     // rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x &&
     // rect1.y < rect2.y + rect2.height && rect1.y + rect1.height > rect2.y
+    /* RECTANGULAR COLLISION
     if(dinoXPos < obstXPos + obstacle.width &&
       dinoXPos + this.width > obstXPos &&
       dinoYPos < obstYPos + obstacle.height &&
       dinoYPos  + this.height > obstYPos){  // collision detection
-        vite = vite - 1;
+        lifes = lifes - 1;
         gameOver = true;
+    }
+    */
+
+    // CIRCLE COLLISION
+    const circle1 = { 
+      x: dinoXPos+50, 
+      y: dinoYPos+50,
+      radius: 50 
+    };
+    const circle2 = { 
+      x: obstXPos+40, 
+      y: obstYPos+40,
+      radius: 40 
+    }
+    //design.beginPath(); START PRINT CIRCLES
+    design.arc(circle1.x , circle1.y, circle1.radius, 50, 0, Math.PI * 2);
+    design.arc(circle2.x , circle2.y, circle2.radius, 150, 0, Math.PI * 2);
+    //design.stroke(); END PRINT CIRCLES
+    let dx = circle2.x - circle1.x;
+    let dy = circle2.y - circle1.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    let sumOfRadii = circle1.radius + circle2.radius;
+    if(distance < sumOfRadii &&  collision == true){
+      this.lifes = this.lifes - 1;
+      collision = false;
+    }
+    else if(distance > sumOfRadii && collision == false){
+      collision = true;
+    }
+    if(this.lifes == 0){
+      gameOver = true;
     }
   },
   draw(design){
     if(dinoReady){
       design.strokeStyle = 'white';
-      design.beginPath();
-      //design.arc(this.dx+265,this.dy+760, 65,50, 0, Math.PI * 2);
       dinoXPos = this.frameWidth-300;
       dinoYPos = this.dy+700;
-      design.strokeRect(
-        this.frameWidth-300, // position X 
-        this.dy+700, // position Y
-        this.width, // width
-        this.height); // height
-      //design.stroke();
       design.drawImage(dinoImage, 
         this.frameWidth * frameX,
         this.frameHeight * frameY,
@@ -164,7 +179,7 @@ const dino = {
     gameFrame++;
   }
 }
-
+// Define ground
 const ground = {
   x: 0,
   y: 750,
@@ -185,7 +200,7 @@ const ground = {
     }
   }
 }
-
+// Define background
 const background= {
   x: 0,
   y: 0,
@@ -198,15 +213,9 @@ const background= {
       this.x, this.y, window.innerWidth, window.innerHeight);
     design.drawImage(backgroundImage, 
       this.x + window.innerWidth - this.speed , this.y, window.innerWidth, window.innerHeight);
-  },
-  update(){
-    this.x = this.x - this.speed;
-    if(this.x < 0 - window.innerWidth){
-      this.x = 0;
-    }
-  },
+  }
 }
-
+// Define background
 const obstacle = {
   x: 0,
   y: 0,
@@ -220,12 +229,6 @@ const obstacle = {
     design.strokeStyle = 'white';
     obstXPos = ground.x + ground.width;
     obstYPos = ground.y+10;
-    design.strokeRect(
-      obstXPos, // position X
-      obstYPos,  // position Y
-      this.width,  // width
-      this.height  // height
-    );  
     // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     design.drawImage(obstacle1Image, 
       ground.x + ground.width, 
@@ -238,8 +241,21 @@ const obstacle = {
     //this.x = this.x - this.speed;
   }
 }
-requestAnimationFrame(main); // start when ready
 
+
+
+// Functions declarations
+function draw_text() {
+  design.font = '80px Secular One';
+  design.fillText('Vite rimaste: ' + dino.lifes, window.innerWidth/2-310, window.innerHeight/2-200);
+  design.fillText('Score: ' + dino.score, window.innerWidth/2-310, window.innerHeight/2-100);
+}
+function score_update(player){
+  setInterval(() => {
+    player.score = player.score + 1;
+  }, 1000);
+}
+score_update(dino);
 function main(){
   design.clearRect(0, 0, canvas.width, canvas.height);
   background.draw();
@@ -248,10 +264,12 @@ function main(){
   ground.update();
   dino.draw(design);
   dino.game();
-  dino.checkCollision(obstacle);
+  dino.checkCollision();
   draw_text();
   if(!gameOver){
     requestAnimationFrame(main);
   }
 }
+requestAnimationFrame(main); // start when ready
+
 
