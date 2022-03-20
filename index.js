@@ -4,7 +4,7 @@
 var canvas = document.getElementById("canvas");
 var design = canvas.getContext("2d"); // return 2d drawing context on the field
 
-// IMAGE DECLARATIONS
+// IMAGES
 // Dino image
 var dinoReady = false;
 const dinoImage = new Image();
@@ -215,7 +215,7 @@ const background= {
       this.x + window.innerWidth - this.speed , this.y, window.innerWidth, window.innerHeight);
   }
 }
-// Define background
+// Define enemy
 const obstacle = {
   x: 0,
   y: 0,
@@ -244,7 +244,7 @@ const obstacle = {
 
 
 
-// Functions declarations
+// Functions
 function draw_text() {
   design.font = '80px Secular One';
   design.fillText('Vite rimaste: ' + dino.lifes, window.innerWidth/2-310, window.innerHeight/2-200);
