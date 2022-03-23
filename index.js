@@ -28,28 +28,20 @@ const keyboard_keys = (function(){
   document.addEventListener("keyup", keyUpHandler, false);
   const keyboard_keys = { // up is when the button is not pressed, down is pressed
     down: false,
-    long_pressed: false,
     up: false
   };
 
   function keyDownHandler(e) {
     if (e.keyCode == 38){
-      time = Date.now();
-      console.log("Pressed");
       keyboard_keys.down = true;
+      keyboard_keys.up = false;
     }
   }
   function keyUpHandler(e) {
     if (e.keyCode == 38){
-      console.log("Released");
-      var totale = Date.now() - time; // totale > 300 ==> long jump
       keyboard_keys.up = true;
       keyboard_keys.down = false;
-      if (totale > 300){
-        console.log(totale);
-        keyboard_keys.long_pressed = true;
       }
-    }
   }
   return keyboard_keys;
 })();
@@ -57,8 +49,8 @@ const keyboard_keys = (function(){
 // Needed declarations
 var time;
 var collision = true;
-let obstXPos;
-let obstYPos;
+let obstXPos; // for collision only
+let obstYPos; // for collision only
 let dinoXPos;
 let dinoYPos;
 let frameX = 0; // coordinates to take frames of sprite
@@ -71,6 +63,10 @@ var distance;
 var sumOfRadii;
 
 
+function red_draw(context){
+  context.fillRect(0, 0, design.canvas.width, design.canvas.height);
+}
+
 // Define dino
 const dino = {
   x: 0,
@@ -81,34 +77,30 @@ const dino = {
   frameHeight: 413,
   frameCount: 18,
   jumpPower: -18,
-  gravity: 1.0,
+  gravity: 1,
   drag: 0.9,
   width: 109,
   height: 133,
   score: 0,
-  lifes: 3,
+  lifes: 2,
+  onGround: false,
   game(){
     dinoReady = true;
-    this.x = this.dx+150
-    this.y = this.dy+660
-    // Enemy collision detection
-      
     // Up button movement
-    if(keyboard_keys.down == true){
+    this.x = this.dx+200;
+    this.y = this.dy+660;
+    if(keyboard_keys.down == true && this.onGround == true){
         this.dy = this.dy + this.jumpPower;
     }
+    // DefinedinoXPos = dinoXPos + this.dy;
     // gravity and ground contact
-    this.dy = this.dy * this.gravity;
+    this.dy = this.dy + this.gravity;
     this.dy = this.dy * this.drag;
-    this.y = this.y + this.dy;
-    if(this.y + this.frameWidth >= ground.weight){
-      this.y = ground.weight - this.frameWidth;
-      this.dy = 0;
+    if(this.y + this.frameWidth >= ground.height){
+      this.y = ground.height - this.frameWidth;
+      this.onGround = true;
     }
-    if(this.y + this.frameHeight >=  window.weight){
-      this.y = window.weight - this.frameHeight;
-      this.dy = 0;
-    }
+    
   },
   checkCollision(){
     // rect1.x < rect2.x + rect2.width && rect1.x + rect1.width > rect2.x &&
@@ -142,9 +134,10 @@ const dino = {
     let dy = circle2.y - circle1.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
     let sumOfRadii = circle1.radius + circle2.radius;
-    if(distance < sumOfRadii &&  collision == true){
+    if(distance < sumOfRadii && collision == true){
       this.lifes = this.lifes - 1;
       collision = false;
+      red_draw(design);
     }
     else if(distance > sumOfRadii && collision == false){
       collision = true;
@@ -163,8 +156,8 @@ const dino = {
         this.frameHeight * frameY,
         this.frameWidth+120,
         this.frameHeight+120,
-        this.dx+150, // position
-        this.dy+660, // position
+        this.dx+200, // X position of dino
+        this.dy+660, // Y position of dino
         this.frameWidth-200,
         this.frameHeight-150);
     }
@@ -236,19 +229,16 @@ const obstacle = {
       this.width, 
       this.height);
     
-  },
-  update(){
-    //this.x = this.x - this.speed;
   }
 }
 
 
-
 // Functions
-function draw_text() {
-  design.font = '80px Secular One';
-  design.fillText('Vite rimaste: ' + dino.lifes, window.innerWidth/2-310, window.innerHeight/2-200);
-  design.fillText('Score: ' + dino.score, window.innerWidth/2-310, window.innerHeight/2-100);
+function draw_text(context) {
+  context.fillStyle = '#e60000';
+  context.font = '80px Secular One';
+  context.fillText('Vite rimaste: ' + dino.lifes, window.innerWidth/2-310, window.innerHeight/2-200);
+  context.fillText('Score: ' + dino.score, window.innerWidth/2-310, window.innerHeight/2-100);
 }
 function score_update(player){
   setInterval(() => {
@@ -256,6 +246,9 @@ function score_update(player){
   }, 1000);
 }
 score_update(dino);
+
+var id = null;
+
 function main(){
   design.clearRect(0, 0, canvas.width, canvas.height);
   background.draw();
@@ -263,13 +256,33 @@ function main(){
   obstacle.draw(design);
   ground.update();
   dino.draw(design);
-  dino.game();
   dino.checkCollision();
-  draw_text();
+  dino.game();
+  draw_text(design);
   if(!gameOver){
-    requestAnimationFrame(main);
+    id = requestAnimationFrame(main);
+  }
+  else{
+    id = cancelAnimationFrame(main);
+    died_state(design);
   }
 }
-requestAnimationFrame(main); // start when ready
+id = requestAnimationFrame(main);
 
 
+function died_state(context){
+  context.font = '80px Secular One';
+  context.fillStyle= 'white';
+  context.fillText('Sei morto !  :(', 200, 200);
+  var time_now = new Date().getTime();
+  var endGame = setInterval(function(){
+    var end_time = new Date().getTime();
+    console.log("Tempo iniziale: ", time_now);
+    console.log("Tempo finale: ", end_time);
+    context.fillText('Back to lobby in 3 seconds...', 200, 300);
+    if(end_time - time_now >= 3000){
+      clearInterval(endGame);
+      location.reload(); // page must redirect to lobby, now only refresh
+    }
+  }, 1000);
+}
