@@ -1,3 +1,31 @@
+/*
+██████╗ ██╗███╗   ██╗ ██████╗    ██╗ ██████╗ 
+██╔══██╗██║████╗  ██║██╔═══██╗   ██║██╔═══██╗
+██║  ██║██║██╔██╗ ██║██║   ██║   ██║██║   ██║
+██║  ██║██║██║╚██╗██║██║   ██║   ██║██║   ██║
+██████╔╝██║██║ ╚████║╚██████╔╝██╗██║╚██████╔╝
+╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝ 
+
+ ____    ______   __  __  _____       ______   _____      
+/\  _`\ /\__  _\ /\ \/\ \/\  __`\    /\__  _\ /\  __`\    
+\ \ \/\ \/_/\ \/ \ \ `\\ \ \ \/\ \   \/_/\ \/ \ \ \/\ \   
+ \ \ \ \ \ \ \ \  \ \ , ` \ \ \ \ \     \ \ \  \ \ \ \ \  
+  \ \ \_\ \ \_\ \__\ \ \`\ \ \ \_\ \  __ \_\ \__\ \ \_\ \ 
+   \ \____/ /\_____\\ \_\ \_\ \_____\/\_\/\_____\\ \_____\
+    \/___/  \/_____/ \/_/\/_/\/_____/\/_/\/_____/ \/_____/
+                                                          
+      ___                       ___           ___                       ___     
+     /\  \          ___        /\__\         /\  \          ___        /\  \    
+    /::\  \        /\  \      /::|  |       /::\  \        /\  \      /::\  \   
+   /:/\:\  \       \:\  \    /:|:|  |      /:/\:\  \       \:\  \    /:/\:\  \  
+  /:/  \:\__\      /::\__\  /:/|:|  |__   /:/  \:\  \      /::\__\  /:/  \:\  \ 
+ /:/__/ \:|__|  __/:/\/__/ /:/ |:| /\__\ /:/__/ \:\__\  __/:/\/__/ /:/__/ \:\__\
+ \:\  \ /:/  / /\/:/  /    \/__|:|/:/  / \:\  \ /:/  / /\/:/  /    \:\  \ /:/  /
+  \:\  /:/  /  \::/__/         |:/:/  /   \:\  /:/  /  \::/__/      \:\  /:/  / 
+   \:\/:/  /    \:\__\         |::/  /     \:\/:/  /    \:\__\       \:\/:/  /  
+    \::/__/      \/__/         /:/  /       \::/  /      \/__/        \::/  /   
+     ~~                        \/__/         \/__/                     \/__/    
+*/
 //design.canvas.width = window.innerWidth;
 //design.canvas.height = window.innerHeight;
 // CONTEXT DECLARATION
@@ -61,11 +89,17 @@ let jump_counter = 0;
 let gameOver = false;
 var distance;
 var sumOfRadii;
+var player_one = "";
+var player_two = "";
+var player_three = "";
+var player_four = "";
+var player_five = "";
+var enemy_online_counter = 0;
+var enemy_alive_status = false;
 
 
-function red_draw(context){
-  context.fillRect(0, 0, design.canvas.width, design.canvas.height);
-}
+
+
 
 // Define dino
 const dino = {
@@ -87,8 +121,6 @@ const dino = {
   game(){
     dinoReady = true;
     // Up button movement
-    this.x = this.dx+200;
-    this.y = this.dy+660;
     if(keyboard_keys.down == true && this.onGround == true){
         this.dy = this.dy + this.jumpPower;
     }
@@ -137,7 +169,8 @@ const dino = {
     if(distance < sumOfRadii && collision == true){
       this.lifes = this.lifes - 1;
       collision = false;
-      red_draw(design);
+      design.fillStyle = "red";
+      design.fillRect(0, 0, design.canvas.width, design.canvas.height);
     }
     else if(distance > sumOfRadii && collision == false){
       collision = true;
@@ -148,7 +181,6 @@ const dino = {
   },
   draw(design){
     if(dinoReady){
-      design.strokeStyle = 'white';
       dinoXPos = this.frameWidth-300;
       dinoYPos = this.dy+700;
       design.drawImage(dinoImage, 
@@ -187,7 +219,7 @@ const ground = {
     this.x + this.width, this.y, this.width, this.height);
   },
   update(){
-    this.x = this.x - this.speed;
+    //this.x = this.x - this.speed; // comment this line to stop game for upgrades
     if(this.x < 0 - this.width){
       this.x = 0;
     }
@@ -219,7 +251,6 @@ const obstacle = {
   onGround: false,
   speed: 3,
   draw(design){
-    design.strokeStyle = 'white';
     obstXPos = ground.x + ground.width;
     obstYPos = ground.y+10;
     // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
@@ -232,20 +263,135 @@ const obstacle = {
   }
 }
 
+function roundRect(ctx, x, y, width, height, radius, fill, stroke) { // make rounded rectangles
+  if (typeof stroke === 'undefined') {
+    stroke = true;
+  }
+  if (typeof radius === 'undefined') {
+    radius = 5;
+  }
+  if (typeof radius === 'number') {
+    radius = {tl: radius, tr: radius, br: radius, bl: radius};
+  } else {
+    var defaultRadius = {tl: 0, tr: 0, br: 0, bl: 0};
+    for (var side in defaultRadius) {
+      radius[side] = radius[side] || defaultRadius[side];
+    }
+  }
+  ctx.beginPath();
+  ctx.moveTo(x + radius.tl, y);
+  ctx.lineTo(x + width - radius.tr, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius.tr);
+  ctx.lineTo(x + width, y + height - radius.br);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius.br, y + height);
+  ctx.lineTo(x + radius.bl, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius.bl);
+  ctx.lineTo(x, y + radius.tl);
+  ctx.quadraticCurveTo(x, y, x + radius.tl, y);
+  ctx.closePath();
+  if (fill) {
+    ctx.fill();
+  }
+  if (stroke) {
+    ctx.stroke();
+  }
+
+}
+
+// Define leaderboard
+const leaderboard = {
+  x: 1400,
+  y: 10,
+  width: 500,
+  height: 450,
+  draw(context){
+    context.strokeStyle = "green";
+    context.fillStyle = "rgba(255, 255, 255, 0.2)";
+    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
+    context.strokeStyle = "green";
+    context.fillStyle = "green";
+    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('Leaderboard', this.x+135, this.y+60); // Leaderboard
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('#1' + player_one, this.x+30, this.y+170); // #1 best score
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('#2' + player_two, this.x+30, this.y+230); // #2 best score
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('#3' + player_three, this.x+30, this.y+290); // #3 best score
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('#4' + player_four, this.x+30, this.y+350); // #4 best score
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('#5' + player_five, this.x+30, this.y+420); // #5 best score
+  },
+  update(){}
+}
+
+const status_board = {
+  x: 10,
+  y: 10,
+  width: 500,
+  height: 450,
+  draw(context){
+    context.strokeStyle = "green";
+    context.fillStyle = "rgba(255, 255, 255, 0.2)";
+    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
+    context.strokeStyle = "green";
+    context.fillStyle = "green";
+    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('Score', this.x+200, this.y+60); // Leaderboard
+    context.fillStyle = 'black';
+    context.font = '55px Secular One';
+    context.fillText('Vite rimaste: ' + dino.lifes, this.x+30, this.y+240); // Score board
+    context.fillText('Score: ' + dino.score, this.x+30, this.y+340); // Score board
+  },
+  update(){}
+}
+
+const online_board = {
+  x: 700,
+  y: 10,
+  width: 500,
+  height: 450,
+  draw(context){
+    context.strokeStyle = "green";
+    context.fillStyle = "rgba(255, 255, 255, 0.2)";
+    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
+    context.strokeStyle = "green";
+    context.fillStyle = "green";
+    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
+    context.fillStyle = 'black';
+    context.font = '40px Secular One';
+    context.fillText('Lobby', this.x+200, this.y+60); // Leaderboard
+    context.fillStyle = 'black';
+    context.font = '50px Secular One';
+    context.fillText('Players online: ' + enemy_online_counter, this.x+30, this.y+240); // Score board
+    context.fillText('Alive: ' + enemy_alive_status, this.x+30, this.y+340); // Score board
+  },
+  update(){}
+}
 
 // Functions
-function draw_text(context) {
-  context.fillStyle = '#e60000';
-  context.font = '80px Secular One';
-  context.fillText('Vite rimaste: ' + dino.lifes, window.innerWidth/2-310, window.innerHeight/2-200);
-  context.fillText('Score: ' + dino.score, window.innerWidth/2-310, window.innerHeight/2-100);
-}
 function score_update(player){
   setInterval(() => {
     player.score = player.score + 1;
   }, 1000);
 }
+function speed_update(object){
+  setInterval(() => {
+    object.speed = object.speed + 1;
+  }, 10000);
+}
 score_update(dino);
+speed_update(ground);
 
 var id = null;
 
@@ -256,9 +402,11 @@ function main(){
   obstacle.draw(design);
   ground.update();
   dino.draw(design);
+  leaderboard.draw(design);
+  status_board.draw(design);
+  online_board.draw(design);
   dino.checkCollision();
   dino.game();
-  draw_text(design);
   if(!gameOver){
     id = requestAnimationFrame(main);
   }
@@ -271,14 +419,15 @@ id = requestAnimationFrame(main);
 
 
 function died_state(context){
+  context.fillStyle= 'red';
+  context.fillRect(0, 0, design.canvas.width, design.canvas.height);
   context.font = '80px Secular One';
   context.fillStyle= 'white';
   context.fillText('Sei morto !  :(', 200, 200);
+  player_one = "luke"
   var time_now = new Date().getTime();
   var endGame = setInterval(function(){
     var end_time = new Date().getTime();
-    console.log("Tempo iniziale: ", time_now);
-    console.log("Tempo finale: ", end_time);
     context.fillText('Back to lobby in 3 seconds...', 200, 300);
     if(end_time - time_now >= 3000){
       clearInterval(endGame);
