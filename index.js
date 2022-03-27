@@ -5,26 +5,6 @@
 ██║  ██║██║██║╚██╗██║██║   ██║   ██║██║   ██║
 ██████╔╝██║██║ ╚████║╚██████╔╝██╗██║╚██████╔╝
 ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝ 
-
- ____    ______   __  __  _____       ______   _____      
-/\  _`\ /\__  _\ /\ \/\ \/\  __`\    /\__  _\ /\  __`\    
-\ \ \/\ \/_/\ \/ \ \ `\\ \ \ \/\ \   \/_/\ \/ \ \ \/\ \   
- \ \ \ \ \ \ \ \  \ \ , ` \ \ \ \ \     \ \ \  \ \ \ \ \  
-  \ \ \_\ \ \_\ \__\ \ \`\ \ \ \_\ \  __ \_\ \__\ \ \_\ \ 
-   \ \____/ /\_____\\ \_\ \_\ \_____\/\_\/\_____\\ \_____\
-    \/___/  \/_____/ \/_/\/_/\/_____/\/_/\/_____/ \/_____/
-                                                          
-      ___                       ___           ___                       ___     
-     /\  \          ___        /\__\         /\  \          ___        /\  \    
-    /::\  \        /\  \      /::|  |       /::\  \        /\  \      /::\  \   
-   /:/\:\  \       \:\  \    /:|:|  |      /:/\:\  \       \:\  \    /:/\:\  \  
-  /:/  \:\__\      /::\__\  /:/|:|  |__   /:/  \:\  \      /::\__\  /:/  \:\  \ 
- /:/__/ \:|__|  __/:/\/__/ /:/ |:| /\__\ /:/__/ \:\__\  __/:/\/__/ /:/__/ \:\__\
- \:\  \ /:/  / /\/:/  /    \/__|:|/:/  / \:\  \ /:/  / /\/:/  /    \:\  \ /:/  /
-  \:\  /:/  /  \::/__/         |:/:/  /   \:\  /:/  /  \::/__/      \:\  /:/  / 
-   \:\/:/  /    \:\__\         |::/  /     \:\/:/  /    \:\__\       \:\/:/  /  
-    \::/__/      \/__/         /:/  /       \::/  /      \/__/        \::/  /   
-     ~~                        \/__/         \/__/                     \/__/    
 */
 //design.canvas.width = window.innerWidth;
 //design.canvas.height = window.innerHeight;
@@ -40,7 +20,7 @@ dinoImage.onload = function(){
   dinoReady = true;
 }
 dinoImage.src = "graphics/dino_sprites.png";
-// Obstacle images
+// Obstacle images 
 const obstacle1Image = new Image();
 obstacle1Image.src = "graphics/obstacles/obstacle.png";
 // Ground image
@@ -49,6 +29,15 @@ groundImage.src = "graphics/ground.png";
 // Background image
 const backgroundImage = new Image();
 backgroundImage.src = "graphics/back.jpg";
+// Leaderboard image
+const leaderboardImage = new Image();
+leaderboardImage.src = "graphics/board.png";
+// Score board image
+const score_board = new Image();
+score_board.src = "graphics/score_board.png";
+// Rope image
+const rope = new Image();
+rope.src = "graphics/rope.png";
 
 // Define keyboard keys
 const keyboard_keys = (function(){
@@ -92,8 +81,6 @@ var sumOfRadii;
 var player_one = "";
 var player_two = "";
 var player_three = "";
-var player_four = "";
-var player_five = "";
 var enemy_online_counter = 0;
 var enemy_alive_status = false;
 
@@ -186,10 +173,10 @@ const dino = {
       design.drawImage(dinoImage, 
         this.frameWidth * frameX,
         this.frameHeight * frameY,
-        this.frameWidth+120,
-        this.frameHeight+120,
-        this.dx+200, // X position of dino
-        this.dy+660, // Y position of dino
+        this.frameWidth,
+        this.frameHeight,
+        this.dx+150, // X position of dino
+        this.dy+580, // Y position of dino
         this.frameWidth-200,
         this.frameHeight-150);
     }
@@ -207,9 +194,9 @@ const dino = {
 // Define ground
 const ground = {
   x: 0,
-  y: 750,
+  y: 680,
   dx: 0,
-  height: 200,
+  height: 300,
   width: 1910,
   speed: 3,
   draw(){
@@ -300,81 +287,52 @@ function roundRect(ctx, x, y, width, height, radius, fill, stroke) { // make rou
 
 // Define leaderboard
 const leaderboard = {
-  x: 1400,
-  y: 10,
-  width: 500,
-  height: 450,
+  x: 1440,
+  y: -20,
+  width: 100,
+  height: 100,
   draw(context){
-    context.strokeStyle = "green";
-    context.fillStyle = "rgba(255, 255, 255, 0.2)";
-    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
-    context.strokeStyle = "green";
-    context.fillStyle = "green";
-    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('Leaderboard', this.x+135, this.y+60); // Leaderboard
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('#1' + player_one, this.x+30, this.y+170); // #1 best score
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('#2' + player_two, this.x+30, this.y+230); // #2 best score
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('#3' + player_three, this.x+30, this.y+290); // #3 best score
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('#4' + player_four, this.x+30, this.y+350); // #4 best score
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('#5' + player_five, this.x+30, this.y+420); // #5 best score
+    design.drawImage(leaderboardImage, 
+      this.x-110, this.y, this.width+580, this.height+350);
+    context.fillStyle = '#66ff66';
+    context.font = '35px Secular One';
+    context.fillText('Leaderboard', this.x+142, this.y+82); // #1 best score
+    context.font = '35px Secular One';
+    context.fillStyle = '#ff1a3c';
+    context.fillText('#1 ' + player_one, this.x+90, this.y+200); // #1 best score
+    context.fillStyle = '#ff00ff';
+    context.fillText('#2 ' + player_two, this.x+90, this.y+280); // #2 best score
+    context.fillStyle = '#0066cc';
+    context.fillText('#3 ' + player_three, this.x+90, this.y+360); // #3 best score
+    //context.font = '40px Secular One';
+    //context.fillText('#4' + player_four, this.x+140, this.y+330); // #4 best score
+    //context.font = '40px Secular One';
+    //context.fillText('#5' + player_five, this.x+140, this.y+400); // #5 best score
   },
   update(){}
 }
 
 const status_board = {
-  x: 10,
-  y: 10,
-  width: 500,
-  height: 450,
+  x: 50,
+  y: 50,
+  width: 700,
+  height: 200,
   draw(context){
-    context.strokeStyle = "green";
-    context.fillStyle = "rgba(255, 255, 255, 0.2)";
-    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
-    context.strokeStyle = "green";
-    context.fillStyle = "green";
-    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('Score', this.x+200, this.y+60); // Leaderboard
-    context.fillStyle = 'black';
-    context.font = '55px Secular One';
-    context.fillText('Vite rimaste: ' + dino.lifes, this.x+30, this.y+240); // Score board
-    context.fillText('Score: ' + dino.score, this.x+30, this.y+340); // Score board
-  },
-  update(){}
-}
-
-const online_board = {
-  x: 700,
-  y: 10,
-  width: 500,
-  height: 450,
-  draw(context){
-    context.strokeStyle = "green";
-    context.fillStyle = "rgba(255, 255, 255, 0.2)";
-    roundRect(context, this.x, this.y+40, this.width, this.height, 50, true);
-    context.strokeStyle = "green";
-    context.fillStyle = "green";
-    roundRect(context, this.x+100, this.y, 300, 100, 50, true);
-    context.fillStyle = 'black';
-    context.font = '40px Secular One';
-    context.fillText('Lobby', this.x+200, this.y+60); // Leaderboard
-    context.fillStyle = 'black';
-    context.font = '50px Secular One';
-    context.fillText('Players online: ' + enemy_online_counter, this.x+30, this.y+240); // Score board
-    context.fillText('Alive: ' + enemy_alive_status, this.x+30, this.y+340); // Score board
+    design.drawImage(rope, 
+      this.x, this.y-55, this.width, this.height+1000);
+    design.drawImage(rope, 
+      this.x+265, this.y-55, this.width, this.height+1000);
+    design.drawImage(score_board, 
+      this.x, this.y, this.width+700, this.height+380);
+    design.drawImage(score_board, 
+      this.x, this.y+100, this.width+700, this.height+380);
+    design.drawImage(score_board, 
+      this.x, this.y+200, this.width+700, this.height+380);
+    context.fillStyle = '#66ff66'; // #66ff66
+    context.font = '42px Secular One';
+    context.fillText('Vite rimaste: ' + dino.lifes, this.x+25, this.y+55); // Score board
+    context.fillText('Score: ' + dino.score, this.x+80, this.y+155); // Score board
+    context.fillText('Status: Offline', this.x+30, this.y+255); // Score board
   },
   update(){}
 }
@@ -404,7 +362,6 @@ function main(){
   dino.draw(design);
   leaderboard.draw(design);
   status_board.draw(design);
-  online_board.draw(design);
   dino.checkCollision();
   dino.game();
   if(!gameOver){
@@ -424,7 +381,6 @@ function died_state(context){
   context.font = '80px Secular One';
   context.fillStyle= 'white';
   context.fillText('Sei morto !  :(', 200, 200);
-  player_one = "luke"
   var time_now = new Date().getTime();
   var endGame = setInterval(function(){
     var end_time = new Date().getTime();
