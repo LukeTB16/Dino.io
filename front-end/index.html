@@ -14,11 +14,13 @@
 <body>
     <form id="form">
         <div class="form-inline">
-            <input type="text" id="input" class="form-control mb-2 mr-sm-2" id="inlineFormInputName2"
-                placeholder="Insert your nickname...">
+            <input type="text" id="nickname" class="form-control mb-2 mr-sm-2" placeholder="Insert your nickname...">
+            <button onclick ="change_screen()" id="single" class="btn">Single Player</button>
+            <input type="text" id="partyCode" class="form-control mb-2 mr-sm-2" placeholder="Insert your party code...">
+            <button onclick ="" id="multi" class="btn-2">Multiplayer</button>
         </div>
+        <div id="players"></div>
     </form>
-    <button onclick ="change_screen()" type="submit" id="playBtn" class="btn btn-primary mb-2">Play !</button>
     <canvas id="canvas"></canvas>
     <script src="index.js"></script>
 </body>

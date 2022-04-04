@@ -20,14 +20,14 @@ wsServer.on("request", request => {
     connection.on("open", () => console.log('opened!'))
     connection.on("close", () => console.log('closed!'))
     connection.on("message", message => {
-        const result = JSON.parse(message.utf8Data);
+        const result = JSON.parse(message.utf8Data); // message.utf8Data IF give errors
         // request from user to create a new game
         if(result.method === "create") {
             const clientId = result.clientId;
             const gameId = guid();
             games[gameId] = {
                 "id": gameId,
-                "users": 2
+                "clients": []
             }
             const payLoad = {
                 "method": "create",
@@ -37,23 +37,48 @@ wsServer.on("request", request => {
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
         }
+        // request from user to join a game
+        if(result.method === "join") {
+            const clientId = result.clientId;
+            const gameId = result.gameId;
+            const game = game[gameId] // get game object
+            if(game.clients.length >= 3){ // max players reach
+                return;
+            }
+            // players dino skin color
+            const players_color = {"0": "Red", "1": "Green", "2": "Yellow"}[game.clients.length] // n. of clients that we have
+            game.clientId.push({
+                "clientId": clientId,
+                "color": players_color
+            })
+
+            const payLoad = {
+                "method": "join",
+                "game": game
+            }
+            // check all clients and report people joined
+            game.clients.forEach(c =>{
+                clients[c.clientId].connection.send(JSON.stringify(payLoad));
+            })
+        }
     })
     // generate a new clientId
     const clientId = guid();
+
     clients[clientId] = {
         "connection": connection
     }
     // send back response to client
-    const payload = {
+    const payLoad = {
         "method": "connect",
         "clientId": clientId
     }
     // send back the client connect
-    connection.send(JSON.stringify(payload));
+    connection.send(JSON.stringify(payLoad));
 })
 
 // generate unique id
-// https://stackoverflow.com/posts/44996682/revisions
+// ref: https://stackoverflow.com/posts/44996682/revisions
 const guid=()=> {
     const s4=()=> Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);     
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4() + s4() + s4()}`;

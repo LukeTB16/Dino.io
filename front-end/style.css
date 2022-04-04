@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Secular+One&display=swap');
 
 html, body {
-  overflow: hidden;
-  }
-  body {
+    overflow: hidden;
+}
+body {
     background-image: url('graphics/back_blurred.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
@@ -16,8 +16,7 @@ html, body {
     background-color: transparent;
     resize: none;
     outline: none;
-    margin-left: 850px;
-    margin-top: 500px;
+    margin-left: 750px; /* move Y of form */
     height: 50px;
 }
 
@@ -28,8 +27,20 @@ html, body {
     font-family: 'Secular One';
     border-radius: 50px;
     padding: 20px 16px;
-    margin-top: 40px;
-    margin-left: 925px;
+    margin-top: 500px; /* move X of form */
+    width: 225px;
+    margin-left: 25px;
+}
+.btn-2 {
+    background-color: #ffc61a;
+    color: black;
+    font-size: 30px;
+    font-family: 'Secular One';
+    border-radius: 50px;
+    padding: 20px 16px;
+    width: 225px;
+    margin-left: 25px;
+    margin-top: 30px; /* move X of 2nd form (text field + btn) */
 }
 input[type=text]{
     -webkit-border-radius: 10px;
@@ -44,7 +55,7 @@ input[type=text]{
 }
     
 input[type=text]:focus {
-     outline: none;
-     border: 10px solid #ffc61a;
-     color: #ffc61a;
+    outline: none;
+    border: 10px solid #ffc61a;
+    color: #ffc61a;
 }

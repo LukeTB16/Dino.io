@@ -60,6 +60,14 @@ var player_three = "";
 var enemy_online_counter = 0;
 var enemy_alive_status = false;
 var jump_count = 0;
+var id = null;
+var gameStart = false;
+var form = document.getElementById("form");
+var single = document.getElementById("single");
+var multi = document.getElementById("multi");
+var partyCode = document.getElementById("partyCode");
+var nickname = document.getElementById("nickname");
+var players = document.getElementById("players");
 
 // Define keyboard keys
 const keyboard_keys = (function () {
@@ -74,7 +82,7 @@ const keyboard_keys = (function () {
     if (e.keyCode == 38) {
       keyboard_keys.down = true;
       keyboard_keys.up = false;
-      if (jump_count >= 5) {
+      if (jump_count >= 10) {
         keyboard_keys.down = false;
         keyboard_keys.up = true;
       }
@@ -161,19 +169,19 @@ const dino = {
 
     // CIRCLE COLLISION
     const circle1 = {
-      x: dinoXPos + 150,
-      y: dinoYPos + 150,
-      radius: 50,
+      x: dinoXPos + 250,
+      y: dinoYPos + 200,
+      radius: 130,
     };
     const circle2 = {
-      x: obstXPos + 40,
-      y: obstYPos + 40,
-      radius: 40,
+      x: obstXPos-35,
+      y: obstYPos+100,
+      radius: 70,
     };
-    //design.beginPath(); //START PRINT CIRCLES
+    //design.beginPath(); // DRAW - START PRINT CIRCLES
     design.arc(circle1.x, circle1.y, circle1.radius, 50, 0, Math.PI * 2);
     design.arc(circle2.x, circle2.y, circle2.radius, 150, 0, Math.PI * 2);
-    //design.stroke(); //END PRINT CIRCLES
+    //design.stroke(); //DRAW - END PRINT CIRCLES
     let dx = circle2.x - circle1.x;
     let dy = circle2.y - circle1.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
@@ -210,7 +218,7 @@ const ground = {
     );
   },
   update() {
-    this.x = this.x - this.speed; // comment this line to stop game for debugging
+    //this.x = this.x - this.speed; // comment this line to stop game for debugging
     if (this.x < 0 - this.width) {
       this.x = 0;
     }
@@ -241,7 +249,7 @@ const background = {
     );
   },
 };
-// Define enemy
+// Define obstacle enemy
 const obstacle = {
   x: 0,
   y: 0,
@@ -253,14 +261,14 @@ const obstacle = {
   speed: 3,
   draw(design) {
     obstXPos = ground.x + window.innerWidth;
-    obstYPos = ground.y + 50;
+    obstYPos = ground.y;
     // void ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
     design.drawImage(
       obstacle1Image,
-      obstXPos,
-      obstYPos,
-      this.width,
-      this.height
+      obstXPos-100,
+      obstYPos+40,
+      this.width+50,
+      this.height+50
     );
   },
 };
@@ -340,6 +348,8 @@ const status_board = {
   },
   update() {},
 };
+
+
 // Functions
 function score_update(player) {
   setInterval(() => {
@@ -356,50 +366,8 @@ function draw_screen() {
   design.canvas.height = window.innerHeight;
 }
 
-score_update(dino);
-speed_update(ground);
-
-//var loading_page = false;
-var id = null;
-//var id_lobby = null;
-/*
-function lobby_loading(){
-  loading_page = true;
-  lobby.draw();
-  text_field.draw();
-  id_lobby = requestAnimationFrame(lobby_loading);
-}
-lobby_loading();
-*/
-
-var form = document.getElementById("form");
-var btn = document.getElementById("playBtn");
-
-// wiring events client side
-let clientId = null;
-let ws = new WebSocket("ws://localhost:8080");
-btn.addEventListener('click', e => {
-  const payload = {
-    "method": "create",
-    "clientId": clientId
-  }
-  ws.send(JSON.stringify(payload));
-});
-// switch screen
-function change_screen() {
-  if(input.value != ""){
-    btn.remove();
-    form.style.display = "none";
-    main();
-  }
-  else{
-    window.alert("Insert text please!");
-  }
-  console.log(input.value);
-}
-
 function main() {
-  if (!gameOver) {
+  if (!gameOver && gameStart) {
     design.clearRect(0, 0, canvas.width, canvas.height);
     draw_screen();
     background.draw();
@@ -417,8 +385,27 @@ function main() {
     died_state(design);
   }
 }
-
-
+// switch screen
+function change_screen() {
+  if(nickname.value != ""){
+    gameStart = true;
+    single.remove();
+    multi.remove();
+    form.style.display = "none";
+    score_update(dino);
+    speed_update(ground);
+    id = requestAnimationFrame(main);
+  }
+  else{
+    window.alert("Insert text please!");
+    id = cancelAnimationFrame(main);
+  }
+  console.log(nickname.value); // nickname given from the user
+}
+if(gameStart){
+  score_update(dino);
+  speed_update(ground);
+}
 function died_state(context) {
   design.clearRect(0, 0, canvas.width, canvas.height);
   design.drawImage(
@@ -430,7 +417,7 @@ function died_state(context) {
   );
   context.font = "80px Secular One";
   context.fillStyle = "#ffbf00";
-  context.fillText("GAME OVER !", 500, 200);
+  context.fillText("GAME OVER " + nickname.value + " !", 500, 200);
   let final_score = dino.score;
   context.fillText("Final score: " + final_score, 500, 300);
   var time_now = new Date().getTime();
@@ -444,10 +431,34 @@ function died_state(context) {
   }, 1000);
 }
 
+
+
+// CLIENT SIDE EVENTS
+let clientId = null;
+let gameId = null;
+let ws = new WebSocket("ws://localhost:8080");
+single.addEventListener('click', e => {
+  const payload = {
+    "method": "create",
+    "clientId": clientId
+  }
+  ws.send(JSON.stringify(payload));
+});
+multi.addEventListener("click", e => {
+  if(gameId === null) {
+    gameId = partyCode.value;
+  }
+  const payload = {
+    "method": "join",
+    "clientId": clientId,
+    "gameId": gameId // value on create method
+  }
+  ws.send(JSON.stringify(payload));
+});
 // managing requets client side
 ws.onmessage = (message) => {
-  // message.data
-  const response = JSON.parse(message.data);
+  // response from server
+  const response = JSON.parse(JSON.stringify(message.data));
   // connect
   if (response.method === "connect") {
     clientId = response.clientId;
@@ -455,7 +466,23 @@ ws.onmessage = (message) => {
   }
   // create
   if (response.method === "create") {
-    clientId = response.clientId;
+    // we have already clientId
+    gameId = response.game.id;
     console.log("Game successfully created, ID: " + response.game.id + "n. of players: " + response.game.users);
+  }
+  // join
+  if (response.method === "join") {
+    const game = response.game;
+    game.clients.forEach(c => {
+      while (players.firstChild) {
+        players.removeChild(players.firstChild)
+      }  
+      const d = document.createElement("div");
+      d.style.width = "200px";
+      d.style.background = c.color;
+      d.textContent = c.clientId;
+      players.appendChild(d);
+    })
+
   }
 };
