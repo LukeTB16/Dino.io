@@ -1,10 +1,3 @@
-██████╗ ██╗███╗   ██╗ ██████╗    ██╗ ██████╗ 
-██╔══██╗██║████╗  ██║██╔═══██╗   ██║██╔═══██╗
-██║  ██║██║██╔██╗ ██║██║   ██║   ██║██║   ██║
-██║  ██║██║██║╚██╗██║██║   ██║   ██║██║   ██║
-██████╔╝██║██║ ╚████║╚██████╔╝██╗██║╚██████╔╝
-╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝ 
-
 Benvenuto nella documentazione di DINO.IO, il mio nuovo gioco single-player/multiplayer online.
 
 Lo scopo del gioco è far sopravvivere (o in SOLO mode o contro amici) il dinosauro, protaginista
