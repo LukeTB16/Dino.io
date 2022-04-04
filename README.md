@@ -38,7 +38,7 @@ L'applicazione web è così strutturata:
   "npx nodemon server.js" nella directory "~Dino.io/back-end"
   
   Moduli utilizzati:
-  https://www.npmjs.com/package/nodemon
+  https://www.npmjs.com/package/nodemon,
   https://www.npmjs.com/package/npx
   
   L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
