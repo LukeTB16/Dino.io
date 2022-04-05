@@ -47,3 +47,6 @@ L'applicazione web è così strutturata:
   L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
   aggiornamento della documentazione.
   
+  Update - 05/04
+  Localizzato il problema, sto lavorando sulla JOIN.
+  
