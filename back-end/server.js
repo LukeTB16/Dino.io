@@ -1,3 +1,4 @@
+
 const http = require('http');
 const app = require('express')();
 app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk'));
@@ -7,7 +8,7 @@ const httpServer = http.createServer();
 
 httpServer.listen(8080, () => console.log('Front-end on 8080'));
 // hashmap clients
-const clients = {}
+const clients = {};
 const games = {};
 
 
@@ -41,13 +42,14 @@ wsServer.on("request", request => {
         if(result.method === "join") {
             const clientId = result.clientId;
             const gameId = result.gameId;
-            const game = game[gameId] // get game object
+            const game = games[gameId] // get game object
             if(game.clients.length >= 3){ // max players reach
+                console.log("Max people limit reached");
                 return;
             }
             // players dino skin color
-            const players_color = {"0": "Red", "1": "Green", "2": "Yellow"}[game.clients.length] // n. of clients that we have
-            game.clientId.push({
+            const players_color = {"0": "Red", "1": "Green"}[game.clients.length] // n. of clients that we have
+            game.clients.push({
                 "clientId": clientId,
                 "color": players_color
             })
@@ -64,7 +66,6 @@ wsServer.on("request", request => {
     })
     // generate a new clientId
     const clientId = guid();
-
     clients[clientId] = {
         "connection": connection
     }
@@ -83,3 +84,16 @@ const guid=()=> {
     const s4=()=> Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);     
     return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4() + s4() + s4()}`;
   }
+
+
+
+  /*
+
+const io = require("socket.io")();
+
+io.on('connection', client => {
+    client.emit('init', {data: 'hello world'})
+});
+
+io.listen(8081);
+*/

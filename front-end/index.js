@@ -4,9 +4,10 @@
 ██║  ██║██║██╔██╗ ██║██║   ██║   ██║██║   ██║
 ██║  ██║██║██║╚██╗██║██║   ██║   ██║██║   ██║
 ██████╔╝██║██║ ╚████║╚██████╔╝██╗██║╚██████╔╝
-╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝ 
+╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝
 */
-
+//const socket = io('http://localhost:8080');
+//socket.on('init', handleInit);
 //design.canvas.width = window.innerWidth;
 //design.canvas.height = window.innerHeight;
 // CONTEXT DECLARATION
@@ -458,7 +459,7 @@ multi.addEventListener("click", e => {
 // managing requets client side
 ws.onmessage = (message) => {
   // response from server
-  const response = JSON.parse(JSON.stringify(message.data));
+  const response = JSON.parse(message.data);
   // connect
   if (response.method === "connect") {
     clientId = response.clientId;
@@ -486,3 +487,13 @@ ws.onmessage = (message) => {
 
   }
 };
+
+
+
+/*
+
+function handleInit(msg){
+  console.log(msg);
+}
+
+*/
