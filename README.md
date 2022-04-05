@@ -37,7 +37,7 @@ L'applicazione web è così strutturata:
   Per avviare il debug si può sfruttare Node tramite il comando:
   "npx nodemon server.js" nella directory "~Dino.io/back-end"
   
-  Moduli utilizzati:
+  Package utilizzati:
   https://www.npmjs.com/package/nodemon,
   https://www.npmjs.com/package/npx
   
