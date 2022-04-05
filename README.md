@@ -41,6 +41,9 @@ L'applicazione web è così strutturata:
   https://www.npmjs.com/package/nodemon,
   https://www.npmjs.com/package/npx
   
+  Documentazione lato server:
+  https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
+  
   L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
   aggiornamento della documentazione.
   
