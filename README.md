@@ -5,7 +5,7 @@ del gioco, ai vari ostacoli animati con velocità e difficoltà di gioco crescen
 Nella prima schermata abbiamo sono presenti due input di testo in base alla modalità che si vuole
 scegliere. Nel primo input di testo (NECESSARIO per entrambe le modalità) deve essere inserito
 il nickname dell'utente, mentre nel secondo bisogna inserire l'identificativo di gioco per giocare
-insieme ad altri utenti (attualmente massimo 3, l'identificativo viene generato quando si avvia la 
+insieme ad altri utenti (party code di max 2 persone attualmente, l'identificativo viene generato quando si avvia la 
 modalità sigle player).
 Proseguendo nel gioco, dopo aver selezione la modalità desiderata, accediamo quindi al fulcro del
 gioco stesso con un'interfaccia che mostra negli angoli superiori lo status e le statistiche di 
