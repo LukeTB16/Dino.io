@@ -6,8 +6,7 @@
 ██████╔╝██║██║ ╚████║╚██████╔╝██╗██║╚██████╔╝
 ╚═════╝ ╚═╝╚═╝  ╚═══╝ ╚═════╝ ╚═╝╚═╝ ╚═════╝
 */
-//const socket = io('http://localhost:8080');
-//socket.on('init', handleInit);
+
 //design.canvas.width = window.innerWidth;
 //design.canvas.height = window.innerHeight;
 // CONTEXT DECLARATION
@@ -69,6 +68,7 @@ var multi = document.getElementById("multi");
 var partyCode = document.getElementById("partyCode");
 var nickname = document.getElementById("nickname");
 var players = document.getElementById("players");
+var lobby = document.getElementById("lobby");
 
 // Define keyboard keys
 const keyboard_keys = (function () {
@@ -398,10 +398,10 @@ function change_screen() {
     id = requestAnimationFrame(main);
   }
   else{
-    window.alert("Insert text please!");
+    window.alert("Insert nickname first!");
     id = cancelAnimationFrame(main);
   }
-  console.log(nickname.value); // nickname given from the user
+  console.log("Nickname: ", nickname.value); // nickname given from the user
 }
 if(gameStart){
   score_update(dino);
@@ -432,18 +432,26 @@ function died_state(context) {
   }, 1000);
 }
 
-
-
 // CLIENT SIDE EVENTS
 let clientId = null;
 let gameId = null;
+var party_created = false;
 let ws = new WebSocket("ws://localhost:8080");
-single.addEventListener('click', e => {
-  const payload = {
-    "method": "create",
-    "clientId": clientId
+lobby.addEventListener('click', e => {
+  if(nickname.value == ""){
+    window.alert("Insert nickname first!");
   }
-  ws.send(JSON.stringify(payload));
+  else if (!party_created){ // check if party is already been created
+    const payload = {
+      "method": "create",
+      "clientId": clientId,
+      "nickname": nickname.value
+    }
+    ws.send(JSON.stringify(payload));
+    console.log("PARTY CODE CREATED");
+    console.log("Your nickname is: ", nickname.value);
+    party_created = true;
+  }
 });
 multi.addEventListener("click", e => {
   if(gameId === null) {
@@ -452,7 +460,8 @@ multi.addEventListener("click", e => {
   const payload = {
     "method": "join",
     "clientId": clientId,
-    "gameId": gameId // value on create method
+    "gameId": gameId, // value on create method
+    "nickname": nickname.value
   }
   ws.send(JSON.stringify(payload));
 });
@@ -469,31 +478,21 @@ ws.onmessage = (message) => {
   if (response.method === "create") {
     // we have already clientId
     gameId = response.game.id;
-    console.log("Game successfully created, ID: " + response.game.id + "n. of players: " + response.game.users);
+    console.log("Game successfully created, ID -> " + response.game.id + " <- n. of players: " + response.game.users);
   }
   // join
   if (response.method === "join") {
-    const game = response.game;
-    game.clients.forEach(c => {
-      while (players.firstChild) {
-        players.removeChild(players.firstChild)
-      }  
-      const d = document.createElement("div");
-      d.style.width = "200px";
-      d.style.background = c.color;
-      d.textContent = c.clientId;
-      players.appendChild(d);
-    })
-
+    console.log(response);
   }
 };
 
 
-
 /*
-
+const socket = io('http://localhost:8080');
+socket.on('init', handleInit);
 function handleInit(msg){
   console.log(msg);
 }
-
 */
+
+
