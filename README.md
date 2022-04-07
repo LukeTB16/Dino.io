@@ -49,4 +49,6 @@ L'applicazione web è così strutturata:
   
   Update - 05/04
   Localizzato il problema, sto lavorando sulla JOIN.
+  Update - 07/04
+  Problema lato server risolto, completo il lato server.
   
