@@ -1,4 +1,3 @@
-
 const http = require('http');
 const app = require('express')();
 app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk'));
@@ -19,17 +18,33 @@ wsServer.on("request", request => {
     // connect
     const connection = request.accept(null, request.origin);
     connection.on("open", () => console.log('opened!'))
-    connection.on("close", () => console.log('closed!'))
+    connection.on("close", () => {
+        games
+        console.log('closed!')})
     connection.on("message", message => {
         const result = JSON.parse(message.utf8Data); // message.utf8Data IF give errors
         // request from user to create a new game
-        if(result.method === "create") {
+        if(result.method == "create") {
+            console.log(result.nickname, "ha richiesto al server -> CREATE LOBBY");
             const clientId = result.clientId;
-            const gameId = guid();
-            games[gameId] = {
-                "id": gameId,
-                "clients": []
+            const gameId = game_guid();
+            /*
+            game.clients.push({
+                "clientId": clientId,
+                "color": players_color
+            })
+            */
+            try {
+                games[gameId] = {
+                    "id": gameId,
+                    "clients": [clientId]
+                }
+            } catch (error) {
+                console.log("Problemi con la creazione della lobby...");
+                console.error(error);
             }
+            console.log("Lobby attuali...");
+            console.log(games);
             const payLoad = {
                 "method": "create",
                 "game": games[gameId]
@@ -39,7 +54,9 @@ wsServer.on("request", request => {
             con.send(JSON.stringify(payLoad));
         }
         // request from user to join a game
-        if(result.method === "join") {
+        if(result.method == "join") {
+            console.log(result.nickname, "ha richiesto al server -> JOIN LOBBY");
+            /*
             const clientId = result.clientId;
             const gameId = result.gameId;
             const game = games[gameId] // get game object
@@ -62,10 +79,44 @@ wsServer.on("request", request => {
             game.clients.forEach(c =>{
                 clients[c.clientId].connection.send(JSON.stringify(payLoad));
             })
+
+            */
+           /*
+            const clientId = result.clientId;
+            const gameId = result.gameId;
+            const game = games[gameId] // get game object
+            console.log(game);
+            const payLoad = {
+                "method": "join",
+                "game": game,
+                "gameId": gameId,
+                "clientId": clientId
+            }
+            const con = clients[clientId].connection;
+            con.send(JSON.stringify(payLoad));
+        */
+            const clientId = result.clientId;
+            const gameId = result.gameId;
+            const nick = result.nickname;
+            //const game = games[gameId];
+            if(games[gameId]){
+                console.log("LOBBY ESISTENTE");
+                if(games[gameId].clients.length < 2){
+                    games[gameId].clients.push(clientId);
+                    console.log(games);
+                    console.log(nick, " è stato aggiunto alla lobby");
+                }
+                else{
+                    return;
+                }
+            }
+            else{
+                console.log("La LOBBY NON ESISTE");
+            }
         }
     })
     // generate a new clientId
-    const clientId = guid();
+    const clientId = id_guid();
     clients[clientId] = {
         "connection": connection
     }
@@ -79,15 +130,25 @@ wsServer.on("request", request => {
 })
 
 // generate unique id
-// ref: https://stackoverflow.com/posts/44996682/revisions
-const guid=()=> {
-    const s4=()=> Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);     
-    return `${s4() + s4()}-${s4()}-${s4()}-${s4()}-${s4() + s4() + s4()}`;
-  }
+// ref: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
+const id_guid= ()=> {
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart;
+}
+const game_guid= ()=> {
+    var firstPart = (Math.random() * 46656) | 0;
+    var secondPart = (Math.random() * 46656) | 0;
+    firstPart = ("000" + firstPart.toString(36)).slice(-3);
+    secondPart = ("000" + secondPart.toString(36)).slice(-3);
+    return firstPart + secondPart + firstPart;
+}
 
 
 
-  /*
+/*
 
 const io = require("socket.io")();
 
@@ -96,4 +157,5 @@ io.on('connection', client => {
 });
 
 io.listen(8081);
+
 */
