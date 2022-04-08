@@ -1,5 +1,6 @@
 <h1>DINO.IO - newest dino run game (WITH MULTIPLAYER !)</h1>
 <div>
+  <h2>Scopo del gioco</h2>
   <div>Lo scopo del gioco è far sopravvivere (o in SOLO mode o contro amici) il dinosauro, protaginista
   del gioco, ai vari ostacoli animati con velocità e difficoltà di gioco crescente.
   Nella prima schermata abbiamo sono presenti due input di testo in base alla modalità che si vuole
@@ -36,13 +37,14 @@
       Per avviare il debug si può sfruttare Node tramite il comando:
       "npx nodemon server.js" nella directory "~Dino.io/back-end"</p>
     </div>
+  <h2>Package utilizzati:</h2>
   <div>
-    Package utilizzati:
     https://www.npmjs.com/package/nodemon,
     https://www.npmjs.com/package/npx
-    Documentazione lato server:
+    <br>Documentazione lato server:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
   </div>
+  <h2>Sviluppo</h2>
   <div>
     L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
     aggiornamento della documentazione.
@@ -51,6 +53,6 @@
     Localizzato il problema, sto lavorando sulla JOIN.
     Update - 07/04
     Problema lato server risolto, completo il lato server.
-    </div>
+  </div>
 </div>
   
