@@ -12,6 +12,7 @@
   gioco stesso con un'interfaccia che mostra negli angoli superiori lo status e le statistiche di 
     gioco, mentre al centro la mecannica di gioco. </div>
   <div>L'applicazione web è così strutturata:
+    
     <p>-> front-end: il core del programma con tutta la logica e la grafica annessa. 
       Presenta necessariamente anche la struttura di connessione al server back-end
       per l'invio di informazioni circa gli utenti e la lobby (stanza con più utenti).
@@ -24,8 +25,8 @@
       invio al server delle informazioni necesasarie con relativa elaborazione della
       risposta.
       Per avviare il debug si può sfruttare Node tramite il comando:
-      "npx live-server" nella directory "~Dino.io/front-end"
-    -> back-end: il lato server con la gestione dei giocatori, delle informazioni
+      "npx live-server" nella directory "~Dino.io/front-end" </p>
+   <p> -> back-end: il lato server con la gestione dei giocatori, delle informazioni
       di gioco necessarie per la creazione di una lobby condivisa per poter giocare
       con più persone e di conseguenza di tutte le struttura di connessione con la 
       parte front-end (tramite WebSocets).
