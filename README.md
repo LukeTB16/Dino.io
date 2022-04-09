@@ -44,8 +44,8 @@
     
   <h2>Package utilizzati:</h2>
   <div>
-    https://www.npmjs.com/package/nodemon,
-    https://www.npmjs.com/package/npx
+    NODEMON: https://www.npmjs.com/package/nodemon,
+    NPX: https://www.npmjs.com/package/npx<br>
     <br>Documentazione lato server:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
   </div>
