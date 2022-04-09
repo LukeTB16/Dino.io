@@ -12,8 +12,7 @@
   gioco stesso con un'interfaccia che mostra negli angoli superiori lo status e le statistiche di 
     gioco, mentre al centro la mecannica di gioco. </div>
   <div>L'applicazione web è così strutturata:
-    
-    <p>-> front-end: il core del programma con tutta la logica e la grafica annessa. 
+     <p>-> front-end: il core del programma con tutta la logica e la grafica annessa. 
       Presenta necessariamente anche la struttura di connessione al server back-end
       per l'invio di informazioni circa gli utenti e la lobby (stanza con più utenti).
       In particolare, file "index.js":
