@@ -10,9 +10,10 @@
   modalità single player).
   Proseguendo nel gioco, dopo aver selezione la modalità desiderata, accediamo quindi al fulcro del
   gioco stesso con un'interfaccia che mostra negli angoli superiori lo status e le statistiche di 
-    gioco, mentre al centro la mecannica di gioco. </div>
-  <div>L'applicazione web è così strutturata:
-     <p>-> front-end: il core del programma con tutta la logica e la grafica annessa. 
+  gioco, mentre al centro la mecannica di gioco. 
+  L'applicazione web è così strutturata:</div>
+ <ul>
+    <li>front-end: il core del programma con tutta la logica e la grafica annessa. 
       Presenta necessariamente anche la struttura di connessione al server back-end
       per l'invio di informazioni circa gli utenti e la lobby (stanza con più utenti).
       In particolare, file "index.js":
@@ -24,23 +25,26 @@
       invio al server delle informazioni necesasarie con relativa elaborazione della
       risposta.
       Per avviare il debug si può sfruttare Node tramite il comando nella directory 
-       "~Dino.io/front-end":</p>
+       "~Dino.io/front-end":
+     </li>
    
-      npx live-server
-       
-   <p> -> back-end: il lato server con la gestione dei giocatori, delle informazioni
-      di gioco necessarie per la creazione di una lobby condivisa per poter giocare
-      con più persone e di conseguenza di tutte le struttura di connessione con la 
-      parte front-end (tramite WebSocets).
-      In particolare, file server.js:
-      in una prima parte abbiamo la definizione di strutture e metodi necessari alla
-      predisposizione del server alla connessione e all'ascolto degli eventi provenienti
-      dal client. In una seconda parte, la definizione di metodi per la gestione degli 
-      eventi di gioco.
-      Per avviare il debug si può sfruttare Node tramite il seguente comando nella 
-     directory "~Dino.io/back-end"</p></div>
+       npx live-server 
+   
+   <li> -> back-end: il lato server con la gestione dei giocatori, delle informazioni
+     di gioco necessarie per la creazione di una lobby condivisa per poter giocare
+     con più persone e di conseguenza di tutte le struttura di connessione con la 
+     parte front-end (tramite WebSocets).
+     In particolare, file server.js:
+     in una prima parte abbiamo la definizione di strutture e metodi necessari alla
+     predisposizione del server alla connessione e all'ascolto degli eventi provenienti
+     dal client. In una seconda parte, la definizione di metodi per la gestione degli 
+     eventi di gioco.
+     Per avviare il debug si può sfruttare Node tramite il seguente comando nella 
+    directory "~Dino.io/back-end"
+    </li>
+  </ul>
     
-    npx nodemon server.js
+      npx nodemon server.js
     
   <h2>Package utilizzati:</h2>
   <div>
