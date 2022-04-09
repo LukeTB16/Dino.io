@@ -44,17 +44,17 @@
     
   <h2>Package utilizzati:</h2>
   <div>
-    NODEMON: https://www.npmjs.com/package/nodemon,
-    NPX: https://www.npmjs.com/package/npx<br>
+    NODEMON: https://www.npmjs.com/package/nodemon<br>
+    NPX: https://www.npmjs.com/package/npx
     <br>Documentazione lato server:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
   </div>
   <h2>Sviluppo</h2>
   <div>
     L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
-    aggiornamento della documentazione.
+    aggiornamento della documentazione.<br>
     Update - 05/04
-    Localizzato il problema, sto lavorando sulla JOIN.
+    Localizzato il problema, sto lavorando sulla JOIN.<br>
     Update - 07/04
     Problema lato server risolto, completo il lato server.
   </div>
