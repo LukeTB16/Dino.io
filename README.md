@@ -23,8 +23,11 @@
       schermate; la seconda parte riguarda la gestione degli eventi lato client, ossia
       invio al server delle informazioni necesasarie con relativa elaborazione della
       risposta.
-      Per avviare il debug si può sfruttare Node tramite il comando:
-      "npx live-server" nella directory "~Dino.io/front-end" </p>
+      Per avviare il debug si può sfruttare Node tramite il comando nella directory 
+       "~Dino.io/front-end":</p>
+   
+      npx live-server
+       
    <p> -> back-end: il lato server con la gestione dei giocatori, delle informazioni
       di gioco necessarie per la creazione di una lobby condivisa per poter giocare
       con più persone e di conseguenza di tutte le struttura di connessione con la 
@@ -34,9 +37,11 @@
       predisposizione del server alla connessione e all'ascolto degli eventi provenienti
       dal client. In una seconda parte, la definizione di metodi per la gestione degli 
       eventi di gioco.
-      Per avviare il debug si può sfruttare Node tramite il comando:
-      "npx nodemon server.js" nella directory "~Dino.io/back-end"</p>
-    </div>
+      Per avviare il debug si può sfruttare Node tramite il seguente comando nella 
+     directory "~Dino.io/back-end"</p></div>
+    
+    npx nodemon server.js
+    
   <h2>Package utilizzati:</h2>
   <div>
     https://www.npmjs.com/package/nodemon,
@@ -48,7 +53,6 @@
   <div>
     L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
     aggiornamento della documentazione.
-
     Update - 05/04
     Localizzato il problema, sto lavorando sulla JOIN.
     Update - 07/04
