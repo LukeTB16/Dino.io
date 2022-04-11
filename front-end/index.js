@@ -62,6 +62,7 @@ var enemy_alive_status = false;
 var jump_count = 0;
 var id = null;
 var gameStart = false;
+let ws = new WebSocket("ws://localhost:8080");
 var form = document.getElementById("form");
 var single = document.getElementById("single");
 var multi = document.getElementById("multi");
@@ -219,7 +220,7 @@ const ground = {
     );
   },
   update() {
-    //this.x = this.x - this.speed; // comment this line to stop game for debugging
+    this.x = this.x - this.speed; // comment this line to stop game for debugging
     if (this.x < 0 - this.width) {
       this.x = 0;
     }
@@ -390,6 +391,7 @@ function main() {
 function change_screen() {
   if(nickname.value != ""){
     gameStart = true;
+    document.body.style.backgroundImage = "url('graphics/back_blurred_base.png')";
     single.remove();
     multi.remove();
     form.style.display = "none";
@@ -409,13 +411,6 @@ if(gameStart){
 }
 function died_state(context) {
   design.clearRect(0, 0, canvas.width, canvas.height);
-  design.drawImage(
-    backgroundImage,
-    0,
-    0,
-    window.innerWidth,
-    window.innerHeight
-  );
   context.font = "80px Secular One";
   context.fillStyle = "#ffbf00";
   context.fillText("GAME OVER " + nickname.value + " !", 500, 200);
@@ -436,7 +431,7 @@ function died_state(context) {
 let clientId = null;
 let gameId = null;
 var party_created = false;
-let ws = new WebSocket("ws://localhost:8080");
+
 lobby.addEventListener('click', e => {
   if(nickname.value == ""){
     window.alert("Insert nickname first!");
@@ -457,14 +452,20 @@ multi.addEventListener("click", e => {
   if(gameId === null) {
     gameId = partyCode.value;
   }
-  const payload = {
-    "method": "join",
-    "clientId": clientId,
-    "gameId": gameId, // value on create method
-    "nickname": nickname.value
+  if(partyCode.value == ""){
+    window.alert("Insert party code first!");
   }
-  ws.send(JSON.stringify(payload));
+  else{
+  const payload = {
+      "method": "join",
+      "clientId": clientId,
+      "gameId": gameId, // value on create method
+      "nickname": nickname.value
+    }
+    ws.send(JSON.stringify(payload));
+  }
 });
+
 // managing requets client side
 ws.onmessage = (message) => {
   // response from server
@@ -477,15 +478,26 @@ ws.onmessage = (message) => {
   // create
   if (response.method === "create") {
     // we have already clientId
-    gameId = response.game.id;
-    console.log("Game successfully created, ID -> " + response.game.id + " <- n. of players: " + response.game.users);
+    gameId = response.gameId;
+    console.log("Game successfully created, ID -> " + gameId + " <-");
   }
   // join
   if (response.method === "join") {
-    console.log(response);
+    if(response.start == true) {
+      console.log("MATCH STARTING !")
+    }
+    else{
+      console.log("MATCH CAN'T START !");
+    }
+    
   }
 };
-
+ws.onclose = (msg) => {
+  const payload = {
+    "clientId": clientId
+  }
+  ws.send(JSON.stringify(payload))
+}
 
 /*
 const socket = io('http://localhost:8080');

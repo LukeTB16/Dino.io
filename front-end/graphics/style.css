@@ -4,7 +4,7 @@ html, body {
     overflow: hidden;
 }
 body {
-    background-image: url('graphics/back_blurred.png');
+    background-image: url('back_blurred.png');
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;

@@ -1,4 +1,8 @@
+function getKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key] === value);
+}
 const http = require('http');
+const { getMaxListeners } = require('process');
 const app = require('express')();
 app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk'));
 app.listen(8081, () => console.log('Back-end on 8081'))
@@ -9,112 +13,82 @@ httpServer.listen(8080, () => console.log('Front-end on 8080'));
 // hashmap clients
 const clients = {};
 const games = {};
-
+let counter = 0;
 
 const wsServer = new websocketServer({
     "httpServer": httpServer,
 })
+
+function getGameIdKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key].gameId === value);
+}
+function getClientIdKeyByValue(object, value) {
+    return Object.keys(object).find(key => object[key].clientId === value);
+}
+let indice;
 wsServer.on("request", request => {
     // connect
     const connection = request.accept(null, request.origin);
-    connection.on("open", () => console.log('opened!'))
-    connection.on("close", () => {
-        games
-        console.log('closed!')})
+    connection.on("open", () => console.log('A session has been opened!!'));
     connection.on("message", message => {
         const result = JSON.parse(message.utf8Data); // message.utf8Data IF give errors
         // request from user to create a new game
-        if(result.method == "create") {
+        if (result.method == "create") {
             console.log(result.nickname, "ha richiesto al server -> CREATE LOBBY");
             const clientId = result.clientId;
             const gameId = game_guid();
-            /*
-            game.clients.push({
-                "clientId": clientId,
-                "color": players_color
-            })
-            */
-            try {
-                games[gameId] = {
-                    "id": gameId,
-                    "clients": [clientId]
-                }
-            } catch (error) {
-                console.log("Problemi con la creazione della lobby...");
-                console.error(error);
-            }
+            games[counter] = {
+                'gameId': gameId,
+                'clientId': [clientId]
+            };
+            indice = counter;
+            connection.on("close", () => {
+                delete games[getGameIdKeyByValue(games, gameId)];
+                console.log(clientId, " ha chiuso la comunicazione");
+            });
+            counter = counter + 1;
             console.log("Lobby attuali...");
             console.log(games);
             const payLoad = {
                 "method": "create",
-                "game": games[gameId]
+                "gameId": gameId
             }
-
             const con = clients[clientId].connection;
             con.send(JSON.stringify(payLoad));
         }
         // request from user to join a game
-        if(result.method == "join") {
+        if (result.method == "join") {
+            let start = false;
             console.log(result.nickname, "ha richiesto al server -> JOIN LOBBY");
-            /*
-            const clientId = result.clientId;
-            const gameId = result.gameId;
-            const game = games[gameId] // get game object
-            if(game.clients.length >= 3){ // max players reach
-                console.log("Max people limit reached");
-                return;
-            }
-            // players dino skin color
-            const players_color = {"0": "Red", "1": "Green"}[game.clients.length] // n. of clients that we have
-            game.clients.push({
-                "clientId": clientId,
-                "color": players_color
-            })
-
-            const payLoad = {
-                "method": "join",
-                "game": game
-            }
-            // check all clients and report people joined
-            game.clients.forEach(c =>{
-                clients[c.clientId].connection.send(JSON.stringify(payLoad));
-            })
-
-            */
-           /*
-            const clientId = result.clientId;
-            const gameId = result.gameId;
-            const game = games[gameId] // get game object
-            console.log(game);
-            const payLoad = {
-                "method": "join",
-                "game": game,
-                "gameId": gameId,
-                "clientId": clientId
-            }
-            const con = clients[clientId].connection;
-            con.send(JSON.stringify(payLoad));
-        */
-            const clientId = result.clientId;
-            const gameId = result.gameId;
+            const clientID = result.clientId;
+            const gameID = result.gameId;
             const nick = result.nickname;
-            //const game = games[gameId];
-            if(games[gameId]){
-                console.log("LOBBY ESISTENTE");
-                if(games[gameId].clients.length < 2){
-                    games[gameId].clients.push(clientId);
+            if (games[getGameIdKeyByValue(games, gameID)] != null) {
+                if (games[getClientIdKeyByValue(games, clientID)].clientId.length < 2) {
+                    games[getClientIdKeyByValue(games, clientID)].clientId.push(clientID);
                     console.log(games);
                     console.log(nick, " è stato aggiunto alla lobby");
+                    //start = true;
                 }
-                else{
-                    return;
+                else {
+                    console.log("LOBBY PIENA !");
                 }
             }
-            else{
-                console.log("La LOBBY NON ESISTE");
+            else {
+                console.log("LOBBY NON TROVATA !");
+                console.log(games);
             }
+            const payLoad = {
+                "method": "join",
+                "game": gameID,
+                "start": start
+            }
+            const con = clients[clientID].connection;
+            con.send(JSON.stringify(payLoad));
         }
-    })
+    }
+    );
+
     // generate a new clientId
     const clientId = id_guid();
     clients[clientId] = {
@@ -131,14 +105,14 @@ wsServer.on("request", request => {
 
 // generate unique id
 // ref: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
-const id_guid= ()=> {
+const id_guid = () => {
     var firstPart = (Math.random() * 46656) | 0;
     var secondPart = (Math.random() * 46656) | 0;
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
 }
-const game_guid= ()=> {
+const game_guid = () => {
     var firstPart = (Math.random() * 46656) | 0;
     var secondPart = (Math.random() * 46656) | 0;
     firstPart = ("000" + firstPart.toString(36)).slice(-3);
