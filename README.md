@@ -46,7 +46,7 @@
     
       npx nodemon server.js
     
-  <h2>Package utilizzati:</h2>
+  <h2>Package utilizzati</h2>
   <div>
     NODEMON: https://www.npmjs.com/package/nodemon<br>
     NPX: https://www.npmjs.com/package/npx
