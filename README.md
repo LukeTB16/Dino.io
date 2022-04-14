@@ -1,4 +1,4 @@
-<h1>DINO.IO - newest dino run game (WITH MULTIPLAYER !)</h1>
+<h1>DINO.IO - newest dino run game</h1>
 <div>
   <h2>Scopo del gioco</h2>
   <div>Lo scopo del gioco è far sopravvivere (o in SOLO mode o contro amici) il dinosauro, protaginista
