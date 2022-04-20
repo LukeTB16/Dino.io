@@ -19,7 +19,7 @@ const dinoImage = new Image();
 dinoImage.onload = function () {
   dinoReady = true;
 };
-dinoImage.src = "graphics/dino_sprites.png";
+dinoImage.src = "graphics/dino_sprites_new.png";
 // Obstacle images
 const obstacle1Image = new Image();
 obstacle1Image.src = "graphics/obstacles/obstacle.png";
@@ -47,30 +47,28 @@ let obstYPos; // for collision only
 let dinoXPos;
 let dinoYPos;
 let frameX = 0; // coordinates to take frames of sprite
-let frameY = 0; // must be 0 bc we have sprites in same line in this case
+let frameY = 4; // must be 0 bc we have sprites in same line in this case
 let gameFrame = 0;
-const shakeFrame = 6;
+const shakeFrame = 8;
 let jump_counter = 0;
 let gameOver = false;
 var distance;
 var sumOfRadii;
-var player_one = "";
-var player_two = "";
-var player_three = "";
 var enemy_online_counter = 0;
 var enemy_alive_status = false;
 var jump_count = 0;
 var id = null;
 var gameStart = false;
-let ws = new WebSocket("ws://localhost:8080");
+let ws = new WebSocket("ws://localhost:8080"); // open parallel client channel using sockets
 var form = document.getElementById("form");
 var single = document.getElementById("single");
+var nickname = document.getElementById("nickname");
+/*
 var multi = document.getElementById("multi");
 var partyCode = document.getElementById("partyCode");
-var nickname = document.getElementById("nickname");
 var players = document.getElementById("players");
 var lobby = document.getElementById("lobby");
-
+*/
 // Define keyboard keys
 const keyboard_keys = (function () {
   document.addEventListener("keydown", keyDownHandler, false);
@@ -81,7 +79,7 @@ const keyboard_keys = (function () {
     up: false,
   };
   function keyDownHandler(e) {
-    if (e.keyCode == 38) {
+    if (e.keyCode == 38) { // arrow up
       keyboard_keys.down = true;
       keyboard_keys.up = false;
       if (jump_count >= 10) {
@@ -90,6 +88,11 @@ const keyboard_keys = (function () {
       }
       jump_count = jump_count + 1;
     }
+    if (e.keyCode == 40) {// arrow down
+      keyboard_keys.down = true;
+      keyboard_keys.up = false;
+    }
+
   }
   function keyUpHandler(e) {
     if (e.keyCode == 38) {
@@ -107,30 +110,28 @@ const dino = {
   y: 0,
   dx: 0,
   dy: 0,
-  frameWidth: 519,
-  frameHeight: 413,
-  frameCount: 18,
+  frameWidth: 700, // prec. 519, 8160 x 2360
+  frameHeight: 475, // prec. 413
+  frameCount: 6,
   jumpPower: -18,
   gravity: 0.899,
   drag: 0.9,
-  width: 109,
-  height: 133,
   score: 0,
   lifes: 2,
   draw(design) {
     if (dinoReady) {
-      dinoXPos = this.frameWidth - 300;
+      dinoXPos = 100;
       dinoYPos = this.dy + 500;
       design.drawImage(
         dinoImage,
         this.frameWidth * frameX,
         this.frameHeight * frameY,
-        this.frameWidth,
-        this.frameHeight,
+        400,
+        475,
         dinoXPos, // X position of dino
         dinoYPos, // Y position of dino
-        this.frameWidth,
-        this.frameHeight
+        250, // width of dino
+        275 // height of dino
       );
     }
     // Frame management
@@ -176,14 +177,14 @@ const dino = {
       radius: 130,
     };
     const circle2 = {
-      x: obstXPos-35,
-      y: obstYPos+100,
-      radius: 70,
+      x: obstXPos-25,
+      y: obstYPos+95,
+      radius: 60,
     };
-    //design.beginPath(); // DRAW - START PRINT CIRCLES
+    design.beginPath(); // DRAW - START PRINT CIRCLES
     design.arc(circle1.x, circle1.y, circle1.radius, 50, 0, Math.PI * 2);
     design.arc(circle2.x, circle2.y, circle2.radius, 150, 0, Math.PI * 2);
-    //design.stroke(); //DRAW - END PRINT CIRCLES
+    design.stroke(); //DRAW - END PRINT CIRCLES
     let dx = circle2.x - circle1.x;
     let dy = circle2.y - circle1.y;
     let distance = Math.sqrt(dx * dx + dy * dy);
@@ -220,7 +221,7 @@ const ground = {
     );
   },
   update() {
-    this.x = this.x - this.speed; // comment this line to stop game for debugging
+    //this.x = this.x - this.speed; // comment this line to stop game for debugging
     if (this.x < 0 - this.width) {
       this.x = 0;
     }
@@ -269,8 +270,8 @@ const obstacle = {
       obstacle1Image,
       obstXPos-100,
       obstYPos+40,
-      this.width+50,
-      this.height+50
+      this.width+40,
+      this.height+40
     );
   },
 };
@@ -281,6 +282,8 @@ const leaderboard = {
   y: -20,
   width: 100,
   height: 100,
+  p_nick: [],
+  p_score: [],
   draw(context) {
     design.drawImage(
       leaderboardImage,
@@ -294,17 +297,12 @@ const leaderboard = {
     context.fillText("Leaderboard", this.x + 142, this.y + 82); // #1 best score
     context.font = "35px Secular One";
     context.fillStyle = "#ff1a3c";
-    context.fillText("#1 " + player_one, this.x + 90, this.y + 200); // #1 best score
+    context.fillText("#1 " + this.p_nick[0] + " - " + this.p_score[0], this.x + 90, this.y + 200); // #1 best score
     context.fillStyle = "#ff00ff";
-    context.fillText("#2 " + player_two, this.x + 90, this.y + 280); // #2 best score
+    context.fillText("#2 " + this.p_nick[1] + " - " + this.p_score[1], this.x + 90, this.y + 280); // #2 best score
     context.fillStyle = "#0066cc";
-    context.fillText("#3 " + player_three, this.x + 90, this.y + 360); // #3 best score
-    //context.font = '40px Secular One';
-    //context.fillText('#4' + player_four, this.x+140, this.y+330); // #4 best score
-    //context.font = '40px Secular One';
-    //context.fillText('#5' + player_five, this.x+140, this.y+400); // #5 best score
-  },
-  update() {},
+    context.fillText("#3 " + this.p_nick[2] + " - " + this.p_score[2], this.x + 90, this.y + 360); // #3 best score
+  }
 };
 
 const status_board = {
@@ -367,19 +365,32 @@ function draw_screen() {
   design.canvas.width = window.innerWidth;
   design.canvas.height = window.innerHeight;
 }
-
+function get_lead() {
+  const payload = {
+    "method": "get_lead"
+  }
+  ws.send(JSON.stringify(payload));
+}
+function send_lead(nick, s){
+  const payload = {
+    "method": "update_lead",
+    "nickname": nick,
+    "score": s
+  }
+  ws.send(JSON.stringify(payload));
+}
 function main() {
   if (!gameOver && gameStart) {
     design.clearRect(0, 0, canvas.width, canvas.height);
     draw_screen();
     background.draw();
+    leaderboard.draw(design);
     ground.draw();
     ground.update();
     obstacle.draw(design);
     dino.checkCollision();
     dino.game();
     dino.draw(design);
-    leaderboard.draw(design);
     status_board.draw(design);
     id = requestAnimationFrame(main);
   } else if (gameOver) {
@@ -393,11 +404,11 @@ function change_screen() {
     gameStart = true;
     document.body.style.backgroundImage = "url('graphics/back_blurred_base.png')";
     single.remove();
-    multi.remove();
     form.style.display = "none";
     score_update(dino);
     speed_update(ground);
-    id = requestAnimationFrame(main);
+    get_lead();
+    main();
   }
   else{
     window.alert("Insert nickname first!");
@@ -416,6 +427,7 @@ function died_state(context) {
   context.fillText("GAME OVER " + nickname.value + " !", 500, 200);
   let final_score = dino.score;
   context.fillText("Final score: " + final_score, 500, 300);
+  send_lead(nickname.value, dino.score);
   var time_now = new Date().getTime();
   var endGame = setInterval(function () {
     var end_time = new Date().getTime();
@@ -429,7 +441,7 @@ function died_state(context) {
 
 // CLIENT SIDE EVENTS
 let clientId = null;
-let gameId = null;
+/*
 var party_created = false;
 
 lobby.addEventListener('click', e => {
@@ -443,15 +455,12 @@ lobby.addEventListener('click', e => {
       "nickname": nickname.value
     }
     ws.send(JSON.stringify(payload));
-    console.log("PARTY CODE CREATED");
     console.log("Your nickname is: ", nickname.value);
     party_created = true;
   }
 });
 multi.addEventListener("click", e => {
-  if(gameId === null) {
-    gameId = partyCode.value;
-  }
+  gameId = partyCode.value;
   if(partyCode.value == ""){
     window.alert("Insert party code first!");
   }
@@ -465,8 +474,26 @@ multi.addEventListener("click", e => {
     ws.send(JSON.stringify(payload));
   }
 });
+const status_text = document.createElement("h1");
+const node = document.createTextNode("");
+status_text.appendChild(node);
+document.body.appendChild(status_text);
+*/
 
-// managing requets client side
+single.addEventListener("click", e => {
+  if(nickname.value == ""){
+    window.alert("Insert nickname first!");
+  }
+  else{
+    const payload = {
+        "method": "create",
+        "clientId": clientId,
+        "nickname": nickname.value
+      }
+      ws.send(JSON.stringify(payload));
+  }
+});
+// managing requests client side
 ws.onmessage = (message) => {
   // response from server
   const response = JSON.parse(message.data);
@@ -475,36 +502,53 @@ ws.onmessage = (message) => {
     clientId = response.clientId;
     console.log("Client successfully set, ID: " + clientId);
   }
+  
   // create
   if (response.method === "create") {
-    // we have already clientId
-    gameId = response.gameId;
-    console.log("Game successfully created, ID -> " + gameId + " <-");
+    clientId = response.clientId;
   }
+  if (response.method === "get_lead") {
+    lead_list = response.leaderboard;
+    nick_list = Object.keys(lead_list);
+    leaderboard.p_nick[0] = nick_list[nick_list.length - 1];
+    leaderboard.p_score[0] = lead_list[nick_list[nick_list.length - 1]];
+    leaderboard.p_nick[1] = nick_list[nick_list.length - 2];
+    leaderboard.p_score[1] = lead_list[nick_list[nick_list.length - 2]];
+    leaderboard.p_nick[2] = nick_list[nick_list.length - 3];
+    leaderboard.p_score[2] = lead_list[nick_list[nick_list.length - 3]];
+  }
+  /*
   // join
   if (response.method === "join") {
-    if(response.start == true) {
-      console.log("MATCH STARTING !")
+    if(response.status == 'in a lobby') {
+      node.nodeValue = "YOU NOW ARE IN A LOBBY, MATCH WILL START IN 3 SECONDS...";
+      var time_now = new Date().getTime();
+      var startGame = setInterval(function () {
+        var end_time = new Date().getTime();
+        if (end_time - time_now >= 3000) {
+          clearInterval(startGame);
+          change_screen();
+        }
+      }, 1000);
     }
-    else{
-      console.log("MATCH CAN'T START !");
+    else if(response.status == 'already in a lobby'){
+      node.nodeValue = "ALREADY IN THIS LOBBY";
+    }
+    else if(response.status == 'lobby is full'){
+      node.nodeValue = "LOBBY IS FULL";
+    }
+    else if(response.status == 'lobby not found'){
+      node.nodeValue = "WRONG LOBBY CODE";
     }
     
   }
+  */
 };
+
 ws.onclose = (msg) => {
   const payload = {
     "clientId": clientId
   }
   ws.send(JSON.stringify(payload))
 }
-
-/*
-const socket = io('http://localhost:8080');
-socket.on('init', handleInit);
-function handleInit(msg){
-  console.log(msg);
-}
-*/
-
 
