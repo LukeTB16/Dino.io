@@ -1,4 +1,4 @@
-<h1>DINO.IO - newest dino run game (WITH MULTIPLAYER !)</h1>
+<h1>DINO.IO - newest dino run game</h1>
 <div>
   <h2>Scopo del gioco</h2>
   <div>Lo scopo del gioco è far sopravvivere (o in SOLO mode o contro amici) il dinosauro, protaginista
@@ -46,7 +46,7 @@
     
       npx nodemon server.js
     
-  <h2>Package utilizzati:</h2>
+  <h2>Package utilizzati</h2>
   <div>
     NODEMON: https://www.npmjs.com/package/nodemon<br>
     NPX: https://www.npmjs.com/package/npx
@@ -60,7 +60,9 @@
     Update - 05/04
     Localizzato il problema, sto lavorando sulla JOIN.<br>
     Update - 07/04
-    Problema lato server risolto, completo il lato server.
+    Problema lato server risolto, completo il lato server.<br>
+    Update - 20/04
+    Rimosso multiplayer, lato server completato.
   </div>
 </div>
   
