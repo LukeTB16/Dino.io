@@ -61,6 +61,8 @@
     Localizzato il problema, sto lavorando sulla JOIN.<br>
     Update - 07/04
     Problema lato server risolto, completo il lato server.
+    Update - 20/04
+    Rimosso multiplayer, lato server completato.
   </div>
 </div>
   
