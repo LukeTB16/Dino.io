@@ -62,7 +62,9 @@
     Update - 07/04
     Problema lato server risolto, completo il lato server.<br>
     Update - 20/04
-    Rimosso multiplayer, lato server completato.
+    Rimosso multiplayer, lato server completato.<br>
+    Update - 29/04
+    Sistemata la logica delle collisioni, finalizzando alcuni aspetti.
   </div>
 </div>
   
