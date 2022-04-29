@@ -44,20 +44,12 @@ var time;
 var collision = true;
 let frameX = 0; // X coordinate of dino sprite
 let frameY = 2; // Y coordinate of dino sprite
-let obframeX = 0; // X coordinate of obstacle sprite
-let obframeY = 0; // Y coordinate of obstacle sprite
-let birdframeX = 0; // X coordinate of bird sprite
-let birdframeY = 0; // Y coordinate of bird sprite
 let gameFrame = 0;
-let obgameFrame = 0;
-let birdgameFrame = 0;
 let shakeFrame = 12; // frame number of shake
-let obshakeFrame = 12; // frame number of shake
-let birdshakeFrame = 12; // frame number of bird
 let jump_counter = 0;
-var random_high;
+var random_char;
 var random_pos1 = 0;
-var random_pos2 = 600;
+var random_pos2 = 500;
 let gameOver = false;
 var jump_count = 0;
 var cover_count = 0;
@@ -129,7 +121,7 @@ const dino = {
   gravity: 0.899,
   drag: 0.9,
   score: 0,
-  lifes: 2,
+  lifes: 3,
   width: 300,
   height: 280,
   draw(design) {
@@ -227,6 +219,10 @@ const obstacle = {
   y: 0,
   dx: 0,
   dy: 700,
+  obframeX: 0,
+  obframeY: 0,
+  obgameFrame: 0,
+  obshakeFrame: 5,
   frameWidth: 299,
   frameHeight: 281,
   frameCount: 43,
@@ -246,28 +242,28 @@ const obstacle = {
     }
     design.drawImage(
         image,
-        this.frameWidth * obframeX,
-        this.frameHeight * obframeY,
+        this.frameWidth * this.obframeX,
+        this.frameHeight * this.obframeY,
         this.frameWidth,
         this.frameHeight,
         this.x,
         this.y,
         this.width,
         this.height
-      );
+    );
       // Frame management
-      if (Math.floor(obgameFrame % obshakeFrame) == 0) {
-        if (obframeX < this.frameCount - 1) {
-          obframeX++;
+      if (Math.floor(this.obgameFrame % this.obshakeFrame) == 0) {
+        if (this.obframeX < this.frameCount - 1) {
+          this.obframeX++;
         } else {
-          obframeX = 0;
+          this.obframeX = 0;
         }
-        obgameFrame++;
-    }
+      }
+      this.obgameFrame++;
     this.dx = this.dx - this.speed; // comment this line to stop game for debugging
     if (this.x < 0 - (window.innerWidth)) {
       this.dx = 0;
-      this.x = this.dx + window.innerWidth;
+      this.x = this.dx + window.innerWidth + delay;
       update_delay();
     }
   },
@@ -281,6 +277,10 @@ const bird = {
   frameWidth: 598,
   frameHeight: 402,
   frameCount: 43,
+  birdframeX: 0,
+  birdframeY: 0,
+  birdgameFrame: 0,
+  birdshakeFrame: 12,
   height: 200,
   width: 150,
   speed: 2.5,
@@ -289,14 +289,14 @@ const bird = {
     if (rnd1 == 0) {
       this.y = this.dy + 700;
     }
-    else{
+    else {
       this.y = this.dy + 500;
     }
     // syntax ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
       design.drawImage(
         birdImage,
-        this.frameWidth * birdframeX,
-        this.frameHeight * birdframeY,
+        this.frameWidth * this.birdframeX,
+        this.frameHeight * this.birdframeY,
         this.frameWidth,
         this.frameHeight,
         this.x,
@@ -305,14 +305,14 @@ const bird = {
         this.width
       );
       // Frame management
-      if (Math.floor(birdgameFrame % birdshakeFrame) == 0) {
-        if (birdframeX < 3) {  // 4 frame
-          birdframeX++;
+      if (Math.floor(this.birdgameFrame % this.birdshakeFrame) == 0) {
+        if (this.birdframeX < 3) {  // 4 frame
+          this.birdframeX++;
         } else {
-          birdframeX = 0;
+          this.birdframeX = 0;
         }
       }
-      birdgameFrame++;
+      this.birdgameFrame++;
     this.dx = this.dx - this.speed; // comment this line to stop game for debugging
     if (this.x < 0 - (window.innerWidth)) {
       this.dx = 0;
@@ -394,9 +394,8 @@ function generateRandom(min, max) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 function update_delay() {
-  random_high = generateRandom(0, 1);
-  random_pos1 = generateRandom(0, 700);
-  random_pos2 = generateRandom(random_pos1, 500);
+  random_char = generateRandom(0, 1);
+  random_pos2 = generateRandom(500, 800);
 }
 function checkCollision(d1, ob, lx, ly) {
   // CIRCLE COLLISION
@@ -414,17 +413,17 @@ function checkCollision(d1, ob, lx, ly) {
     circle1.y = circle1.y + 100;
     circle1.x = circle1.x + 75;
   }
-  design.beginPath(); // DRAW - START PRINT CIRCLES
+  //design.beginPath(); // DRAW - START PRINT CIRCLES
   design.arc(circle1.x, circle1.y, circle1.radius, 50, 0, Math.PI * 2);
   design.arc(circle2.x, circle2.y, circle2.radius, 150, 0, Math.PI * 2);
-  design.stroke(); // DRAW - END PRINT CIRCLES
+  //design.stroke(); // DRAW - END PRINT CIRCLES
   let dx = circle2.x - circle1.x;
   let dy = circle2.y - circle1.y;
   let distance = Math.sqrt(dx * dx + dy * dy);
   let sumOfRadii = circle1.radius + circle2.radius;
   if (distance < sumOfRadii && collision == true && gameOver == false) {
-    //d1.lifes = d1.lifes - 1;
     collision = false;
+    d1.lifes = d1.lifes - 1;
     design.fillStyle = "red";
     design.fillRect(0, 0, design.canvas.width, design.canvas.height);
   } else if (distance > sumOfRadii && collision == false) {
@@ -477,8 +476,8 @@ function main() {
     leaderboard.draw(design);
     ground.draw();
     ground.update();
-    o1.draw(random_pos1, random_high);
-    b1.draw(random_pos2, random_high);
+    o1.draw(random_pos1, random_char);
+    b1.draw(random_pos2, random_char);
     d.game();
     d.draw(design);
     checkCollision(d, o1, 60, 75);
