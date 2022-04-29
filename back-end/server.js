@@ -102,44 +102,6 @@ wsServer.on("request", request => {
             }
             console.log(leaderboard);
         }
-        
-        /*
-        // request from user to join a game
-        if (result.method == "join") {
-            stato_player = 'not in a lobby';
-            console.log(result.nickname, "ha richiesto al server -> JOIN LOBBY");
-            const clientID = result.clientId;
-            const gameID = result.gameId;
-            const nick = result.nickname;
-            if (check_ID(games, gameID)) {
-                if (Object.keys(games[gameID].clientId).length < 2 && clientID != games[gameID].clientId[0]) {
-                    games[gameID].clientId.push(clientID);
-                    console.log(games);
-                    console.log(nick, " è stato aggiunto alla lobby");
-                    stato_player = 'in a lobby';
-                }
-                else if (games[gameID].clientId[0] == clientID || games[gameID].clientId[1] == clientID){
-                    console.log("SEI GIà IN QUESTA LOBBY !");
-                    stato_player = 'already in a lobby';
-                }
-                else if (Object.keys(games[gameID].clientId).length == 2) {
-                    console.log("LOBBY PIENA");
-                    stato_player = 'lobby is full';
-                }
-            }
-            else {
-                console.log("LOBBY NON TROVATA !");
-                stato_player = 'lobby not found';
-                console.log(games);
-            }
-            const payLoad = {
-                "method": "join",
-                "status": stato_player
-            }
-            const con = clients[clientID].connection;
-            con.send(JSON.stringify(payLoad));
-        }
-        */
     }
     );
 
@@ -166,14 +128,5 @@ const id_guid = () => {
     secondPart = ("000" + secondPart.toString(36)).slice(-3);
     return firstPart + secondPart;
 }
-/*
-const game_guid = () => {
-    var firstPart = (Math.random() * 46656) | 0;
-    var secondPart = (Math.random() * 46656) | 0;
-    firstPart = ("000" + firstPart.toString(36)).slice(-3);
-    secondPart = ("000" + secondPart.toString(36)).slice(-3);
-    return firstPart + secondPart + firstPart;
-}
-*/
 
 

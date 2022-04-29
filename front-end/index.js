@@ -47,7 +47,8 @@ let frameY = 2; // Y coordinate of dino sprite
 let gameFrame = 0;
 let shakeFrame = 12; // frame number of shake
 let jump_counter = 0;
-var random_char;
+var random_bird;
+var random_ob;
 var random_pos1 = 0;
 var random_pos2 = 500;
 let gameOver = false;
@@ -60,12 +61,8 @@ let ws = new WebSocket("ws://localhost:8080"); // open parallel client channel u
 var form = document.getElementById("form");
 var single = document.getElementById("single");
 var nickname = document.getElementById("nickname");
-/*
-var multi = document.getElementById("multi");
-var partyCode = document.getElementById("partyCode");
-var players = document.getElementById("players");
-var lobby = document.getElementById("lobby");
-*/
+var mySound;
+
 // Define keyboard keys
 const keyboard_keys = (function () {
   document.addEventListener("keydown", keyDownHandler, false);
@@ -80,7 +77,7 @@ const keyboard_keys = (function () {
       keyboard_keys.down = true;
       keyboard_keys.up = false;
       frameY = 0;
-      if (jump_count >= 10) {
+      if (jump_count >= 20) {
         keyboard_keys.down = false;
         keyboard_keys.up = true;
       }
@@ -109,9 +106,24 @@ const keyboard_keys = (function () {
   return keyboard_keys;
 })();
 
+function sound(src) {
+  this.sound = document.createElement("audio");
+  this.sound.src = src;
+  this.sound.setAttribute("preload", "auto");
+  this.sound.setAttribute("controls", "none");
+  this.sound.style.display = "none";
+  document.body.appendChild(this.sound);
+  this.play = function(){
+    this.sound.play();
+  }
+  this.stop = function(){
+    this.sound.pause();
+  }
+}
+
 // Define dino
 const dino = {
-  x: 100,
+  x: 250,
   y: 0,
   dy: 0,
   frameWidth: 680, // prec. 519, 8160 x 2360
@@ -121,7 +133,7 @@ const dino = {
   gravity: 0.899,
   drag: 0.9,
   score: 0,
-  lifes: 3,
+  //lifes: 3,
   width: 300,
   height: 280,
   draw(design) {
@@ -261,9 +273,11 @@ const obstacle = {
       }
       this.obgameFrame++;
     this.dx = this.dx - this.speed; // comment this line to stop game for debugging
-    if (this.x < 0 - (window.innerWidth)) {
+    if (this.x < 0 - (window.innerWidth + delay)) {
       this.dx = 0;
-      this.x = this.dx + window.innerWidth + delay;
+      this.x = this.dx + window.innerWidth;
+      random_ob = generateRandom(0, 1);
+      random_bird = generateRandom(0, 1);
       update_delay();
     }
   },
@@ -281,8 +295,8 @@ const bird = {
   birdframeY: 0,
   birdgameFrame: 0,
   birdshakeFrame: 12,
-  height: 200,
-  width: 150,
+  height: 180,
+  width: 100,
   speed: 2.5,
   draw(delay, rnd1) {
     this.x = this.dx + window.innerWidth + delay;
@@ -382,8 +396,9 @@ const status_board = {
       this.height + 380
     );
     context.fillStyle = "#ffc61a"; // #66ff66
+    context.font = "32px Secular One";
+    context.fillText("Nickname: " + nickname.value, this.x + 15, this.y + 55); // Score board
     context.font = "42px Secular One";
-    context.fillText("Vite rimaste: " + dino.lifes, this.x + 25, this.y + 55); // Score board
     context.fillText("Score: " + dino.score, this.x + 80, this.y + 155); // Score board
   },
   update() { },
@@ -394,20 +409,19 @@ function generateRandom(min, max) { // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
 function update_delay() {
-  random_char = generateRandom(0, 1);
   random_pos2 = generateRandom(500, 800);
 }
-function checkCollision(d1, ob, lx, ly) {
+function checkCollision(d1, ob, lx, ly, rad) {
   // CIRCLE COLLISION
   let circle1 = {
     x: d1.x + 100,
     y: d1.y + 140,
-    radius: 120,
+    radius: 100,
   };
   let circle2 = {
     x: ob.x + lx,
     y: ob.y + ly,
-    radius: 75,
+    radius: rad,
   };
   if (keyboard_keys.cover == true) {
     circle1.y = circle1.y + 100;
@@ -423,15 +437,18 @@ function checkCollision(d1, ob, lx, ly) {
   let sumOfRadii = circle1.radius + circle2.radius;
   if (distance < sumOfRadii && collision == true && gameOver == false) {
     collision = false;
-    d1.lifes = d1.lifes - 1;
+    gameOver = true;
     design.fillStyle = "red";
     design.fillRect(0, 0, design.canvas.width, design.canvas.height);
-  } else if (distance > sumOfRadii && collision == false) {
+  }
+  /*else if (distance > sumOfRadii && collision == false) {
     collision = true;
+    update_delay();
   }
   if (d1.lifes == 0) {
     gameOver = true;
   }
+  */
 }
 function score_update(player) {
   setInterval(() => {
@@ -444,7 +461,7 @@ function speed_update(object, q) {
     if (object.speed >= 10) {
       clearInterval(s_update);
     }
-  }, 5000);
+  }, 6000);
 }
 function draw_screen() {
   design.canvas.width = window.innerWidth;
@@ -470,21 +487,23 @@ let d = dino;
 
 function main() {
   if (!gameOver && gameStart) {
+    mySound.play();
     design.clearRect(0, 0, canvas.width, canvas.height);
     draw_screen();
     background.draw();
     leaderboard.draw(design);
     ground.draw();
     ground.update();
-    o1.draw(random_pos1, random_char);
-    b1.draw(random_pos2, random_char);
+    o1.draw(random_pos1, random_ob);
+    b1.draw(random_pos2, random_bird);
     d.game();
     d.draw(design);
-    checkCollision(d, o1, 60, 75);
-    checkCollision(d, b1, 100, 80);
+    checkCollision(d, o1, 55, 75, 65);
+    checkCollision(d, b1, 70, 40, 50);
     status_board.draw(design);
     id = requestAnimationFrame(main);
   } else if (gameOver) {
+    mySound.stop();
     id = cancelAnimationFrame(main);
     died_state(design);
   }
@@ -498,9 +517,10 @@ function change_screen() {
     form.style.display = "none";
     score_update(dino);
     speed_update(ground, 0.5);
-    speed_update(obstacle, 1);
-    speed_update(bird, 1);
+    speed_update(obstacle, 1.25);
+    speed_update(bird, 1.25);
     get_lead();
+    mySound = new sound("soundtrack.mp3");
     main();
   }
   else {
@@ -533,44 +553,6 @@ function died_state(context) {
 
 // CLIENT SIDE EVENTS
 let clientId = null;
-/*
-var party_created = false;
-
-lobby.addEventListener('click', e => {
-  if(nickname.value == ""){
-    window.alert("Insert nickname first!");
-  }
-  else if (!party_created){ // check if party is already been created
-    const payload = {
-      "method": "create",
-      "clientId": clientId,
-      "nickname": nickname.value
-    }
-    ws.send(JSON.stringify(payload));
-    console.log("Your nickname is: ", nickname.value);
-    party_created = true;
-  }
-});
-multi.addEventListener("click", e => {
-  gameId = partyCode.value;
-  if(partyCode.value == ""){
-    window.alert("Insert party code first!");
-  }
-  else{
-  const payload = {
-      "method": "join",
-      "clientId": clientId,
-      "gameId": gameId, // value on create method
-      "nickname": nickname.value
-    }
-    ws.send(JSON.stringify(payload));
-  }
-});
-const status_text = document.createElement("h1");
-const node = document.createTextNode("");
-status_text.appendChild(node);
-document.body.appendChild(status_text);
-*/
 
 single.addEventListener("click", e => {
   if (nickname.value == "") {
