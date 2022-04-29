@@ -3,7 +3,7 @@ const { waitForDebugger } = require('inspector');
 const { getMaxListeners } = require('process');
 const app = require('express')();
 app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk'));
-app.listen(8081, () => console.log('Back-end on 8081'))
+app.listen(8081, () => console.log('Listening on 8081'))
 const websocketServer = require('websocket').server;
 const httpServer = http.createServer();
 
@@ -12,7 +12,6 @@ httpServer.listen(8080, () => console.log('Front-end on 8080'));
 const clients = {};
 const games = {};
 let leaderboard = {};
-let up_lead = [];
 
 const wsServer = new websocketServer({
     "httpServer": httpServer,
