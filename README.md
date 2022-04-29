@@ -65,6 +65,7 @@
     Rimosso multiplayer, lato server completato.<br>
     Update - 29/04
     Sistemata la logica delle collisioni, finalizzando alcuni aspetti.
-  </div>
+    DA MODIFICARE: adattamento finestra, spawn nemici.
+</div>
 </div>
   
