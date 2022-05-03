@@ -1,36 +1,43 @@
-<h1>DINO.IO - newest dino run game</h1>
-<div>
-  <h2>Scopo del gioco</h2>
-  <div>Lo scopo del gioco è far sopravvivere (o in SOLO mode o contro amici) il dinosauro, protaginista
-  del gioco, ai vari ostacoli animati con velocità e difficoltà di gioco crescente.
-  Nella prima schermata abbiamo sono presenti due input di testo in base alla modalità che si vuole
-  scegliere. Nel primo input di testo (NECESSARIO per entrambe le modalità) deve essere inserito
-  il nickname dell'utente, mentre nel secondo bisogna inserire l'identificativo di gioco per giocare
-  insieme ad altri utenti (party code di max 2 persone attualmente, l'identificativo viene generato quando si avvia la 
-  modalità single player).
-  Proseguendo nel gioco, dopo aver selezione la modalità desiderata, accediamo quindi al fulcro del
-  gioco stesso con un'interfaccia che mostra negli angoli superiori lo status e le statistiche di 
-  gioco, mentre al centro la mecannica di gioco. 
-  L'applicazione web è così strutturata:</div>
- <ul>
-    <li>front-end: il core del programma con tutta la logica e la grafica annessa. 
-      Presenta necessariamente anche la struttura di connessione al server back-end
-      per l'invio di informazioni circa gli utenti e la lobby (stanza con più utenti).
-      In particolare, file "index.js":
-      la prima parte riguarda la definizione di immagini e risorse grafiche, nella 
-      seconda parte vengono definiti i vari oggetti componenti il gioco con gestione
-      degli eventi tramite loop. Essendo il gioco implementato interamente in JS
-      attraverso la funzione "change_screen()" si può notare la gestione di cambio
-      schermate; la seconda parte riguarda la gestione degli eventi lato client, ossia
-      invio al server delle informazioni necesasarie con relativa elaborazione della
-      risposta.
-      Per avviare il debug si può sfruttare Node tramite il comando nella directory 
+# DINO.IO - newest dino run game
+### Obbiettivo del gioco
+  Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
+  il mini game dino su chrome in modalità offline.
+### Scopo del gioco
+  Lo scopo del gioco è far sopravvivere il piccolo dinosauro, protaginista del gioco, ai vari ostacoli 
+  animati, con velocità e difficoltà di gioco crescente.
+### Struttura grafica  
+  Nella prima schermata è presente un campo di testo e un bottone, rispettivamente per inserire il 
+  nickname del giocatore e per registrare lo stesso sul server.
+  Proseguendo, accediamo quindi al fulcro del gioco stesso con un'interfaccia che mostra negli angoli 
+  superiori il nickname inserito, lo score attuale e la classifica globale.
+  Nel caso in cui si dovesse perdere (scontro del dinosauro con uno degli
+  ostacoli animati presenti durante la sessione di gioco) si subentra direttamente a una schermata che
+  indica il game over graficamente e un sottotitolo che riporta lo score ottenuto.
+### Struttura logica
+  L'applicazione web è così strutturata:
+  * front-end: in questa sezione o meglio cartella di gioco vi è il file 'index.html' che contiene la
+    struttura del sito per cui integra con il tag 'canvas' il gioco vero e proprio. Inoltre vi è un 
+    form con campo di testo e bottone di tipo 'submit'. Aprendo il file 'index.js' abbiamo il core del 
+    programma con tutta la logica e la grafica annessa.
+    Nello specifico abbiamo una sezione iniziale in cui vengono esplicitate tutte le variabili e dichiarazioni
+    necessarie (immagini, contatori ecc.).
+    In particolare, con l'oggetto 'keyboard_keys' andiamo a definire una funzione atta ad ascoltare le
+    azioni utente quali la freccia su e giù della nostra tastiera e ne identifica pressione ('keyDownHandler')
+    e rilascio ('keyUpHandler').
+  ///
+    
+    
+    Presenta necessariamente anche la struttura di connessione al server back-end
+      per l'invio di informazioni circa lo score e il nickname degli utenti.
+      
+      
+      
+      Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
        "~Dino.io/front-end":
-     </li>
    
        npx live-server 
    
-   <li> -> back-end: il lato server con la gestione dei giocatori, delle informazioni
+   * back-end: il lato server con la gestione dei giocatori, delle informazioni
      di gioco necessarie per la creazione di una lobby condivisa per poter giocare
      con più persone e di conseguenza di tutte le struttura di connessione con la 
      parte front-end (tramite WebSocets).
