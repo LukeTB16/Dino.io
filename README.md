@@ -1,4 +1,4 @@
-# DINO.IO - newest dino run game
+# DINO.IO - newest dino run game (DOCUMENTAZIONE WORK IN PROGRESS)
 ### Obbiettivo del gioco
   Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
   il mini game dino su chrome in modalità offline.
