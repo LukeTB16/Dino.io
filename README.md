@@ -1,7 +1,7 @@
 # DINO.IO - newest dino run game (DOCUMENTAZIONE WORK IN PROGRESS)
 ### Obbiettivo del gioco
   Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
-  il mini game dino su chrome in modalità offline.
+  il mini game offline dino su Chrome.
 ### Scopo del gioco
   Lo scopo del gioco è far sopravvivere il piccolo dinosauro, protaginista del gioco, ai vari ostacoli 
   animati, con velocità e difficoltà di gioco crescente.
@@ -21,12 +21,17 @@
     programma con tutta la logica e la grafica annessa.
     Nello specifico abbiamo una sezione iniziale in cui vengono esplicitate tutte le variabili e dichiarazioni
     necessarie (immagini, contatori ecc.).
-    In particolare, con l'oggetto 'keyboard_keys' andiamo a definire una funzione atta ad ascoltare le
-    azioni utente quali la freccia su e giù della nostra tastiera e ne identifica pressione ('keyDownHandler')
-    e rilascio ('keyUpHandler').
-  ///
-    
-    
+    * 'keyboard_keys': funzione per l'ascolto delle azioni utente quali la freccia su e giù della tastiera e 
+      riconoscimento della pressione ('keyDownHandler') e del rilascio ('keyUpHandler').
+      * keyDownHandler:
+        ```
+        if (jump_count >= 20) {
+          keyboard_keys.down = false;
+          keyboard_keys.up = true;
+        }    
+        ```
+        Necessario per riportare sul terreno dino per evitare che stia in aria di continuo.
+    * 'sound': funzione per la gestione dell'audio
     Presenta necessariamente anche la struttura di connessione al server back-end
       per l'invio di informazioni circa lo score e il nickname degli utenti.
       
