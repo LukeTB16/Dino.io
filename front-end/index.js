@@ -45,12 +45,12 @@ var collision = true;
 let frameX = 0; // X coordinate of dino sprite
 let frameY = 2; // Y coordinate of dino sprite
 let gameFrame = 0;
-let shakeFrame = 12; // frame number of shake
+let shakeFrame = 5; // frame number of shake
 let jump_counter = 0;
 var random_bird;
 var random_ob;
-var random_pos1 = 0;
-var random_pos2 = 500;
+var random_pos1 = 500;
+var random_pos2 = 1200;
 let gameOver = false;
 var jump_count = 0;
 var cover_count = 0;
@@ -62,6 +62,11 @@ var form = document.getElementById("form");
 var single = document.getElementById("single");
 var nickname = document.getElementById("nickname");
 var mySound;
+let g = ground;
+let o1 = obstacle;
+let b1 = bird;
+let d = dino;
+let clientId = null;
 
 // Define keyboard keys
 const keyboard_keys = (function () {
@@ -234,13 +239,13 @@ const obstacle = {
   obframeX: 0,
   obframeY: 0,
   obgameFrame: 0,
-  obshakeFrame: 5,
+  obshakeFrame: 3,
   frameWidth: 299,
   frameHeight: 281,
   frameCount: 43,
   width: 130,
   height: 130,
-  speed: 2.5,
+  speed: 4,
   draw(delay, rnd) {
     let image;
     this.x = this.dx + window.innerWidth + delay;
@@ -277,8 +282,6 @@ const obstacle = {
       this.dx = 0;
       this.x = this.dx + window.innerWidth;
       random_ob = generateRandom(0, 1);
-      random_bird = generateRandom(0, 1);
-      update_delay();
     }
   },
 };
@@ -297,9 +300,12 @@ const bird = {
   birdshakeFrame: 12,
   height: 180,
   width: 100,
-  speed: 2.5,
-  draw(delay, rnd1) {
-    this.x = this.dx + window.innerWidth + delay;
+  speed: 4,
+  draw(rnd1) {
+    this.x = this.dx + window.innerWidth;
+    if (obstacle.x - this.x <= 300 || obstacle.x - this.x <= -300) {
+      update_delay(500, 700);
+    }
     if (rnd1 == 0) {
       this.y = this.dy + 700;
     }
@@ -331,6 +337,7 @@ const bird = {
     if (this.x < 0 - (window.innerWidth)) {
       this.dx = 0;
       this.x = this.dx + window.innerWidth;
+      random_bird = generateRandom(0, 1);
     }
   },
 }
@@ -355,14 +362,14 @@ const leaderboard = {
     context.fillText("Leaderboard", this.x + 142, this.y + 82); // #1 best score
     context.font = "35px Secular One";
     context.fillStyle = "#ff1a3c";
-    context.fillText("#1 " + this.p_nick[0] + " - " + this.p_score[0], this.x + 90, this.y + 200); // #1 best score
+    context.fillText("#1 " + this.p_nick[0] + " - " + Math.round(this.p_score[0]), this.x + 90, this.y + 200); // #1 best score
     context.fillStyle = "#ff00ff";
-    context.fillText("#2 " + this.p_nick[1] + " - " + this.p_score[1], this.x + 90, this.y + 280); // #2 best score
+    context.fillText("#2 " + this.p_nick[1] + " - " + Math.round(this.p_score[1]), this.x + 90, this.y + 280); // #2 best score
     context.fillStyle = "#0066cc";
-    context.fillText("#3 " + this.p_nick[2] + " - " + this.p_score[2], this.x + 90, this.y + 360); // #3 best score
+    context.fillText("#3 " + this.p_nick[2] + " - " + Math.round(this.p_score[2]), this.x + 90, this.y + 360); // #3 best score
   }
 };
-
+// Define statusboard
 const status_board = {
   x: 50,
   y: 50,
@@ -399,7 +406,8 @@ const status_board = {
     context.font = "32px Secular One";
     context.fillText("Nickname: " + nickname.value, this.x + 15, this.y + 55); // Score board
     context.font = "42px Secular One";
-    context.fillText("Score: " + dino.score, this.x + 80, this.y + 155); // Score board
+    context.fillText("Score: " + Math.round(dino.score), this.x + 80, this.y + 155); // Score board
+    // Math.round(-ground.x*0.01)
   },
   update() { },
 };
@@ -408,8 +416,8 @@ const status_board = {
 function generateRandom(min, max) { // min and max included 
   return Math.floor(Math.random() * (max - min + 1) + min)
 }
-function update_delay() {
-  random_pos2 = generateRandom(500, 800);
+function update_delay(start, end) {
+  random_pos2 = generateRandom(start, end);
 }
 function checkCollision(d1, ob, lx, ly, rad) {
   // CIRCLE COLLISION
@@ -441,27 +449,6 @@ function checkCollision(d1, ob, lx, ly, rad) {
     design.fillStyle = "red";
     design.fillRect(0, 0, design.canvas.width, design.canvas.height);
   }
-  /*else if (distance > sumOfRadii && collision == false) {
-    collision = true;
-    update_delay();
-  }
-  if (d1.lifes == 0) {
-    gameOver = true;
-  }
-  */
-}
-function score_update(player) {
-  setInterval(() => {
-    player.score = player.score + 1;
-  }, 1000);
-}
-function speed_update(object, q) {
-  var s_update = setInterval(() => {
-    object.speed = object.speed + q;
-    if (object.speed >= 10) {
-      clearInterval(s_update);
-    }
-  }, 6000);
 }
 function draw_screen() {
   design.canvas.width = window.innerWidth;
@@ -477,23 +464,25 @@ function send_lead(nick, s) {
   const payload = {
     "method": "update_lead",
     "nickname": nick,
-    "score": s
+    "score": Math.round(s)
   }
   ws.send(JSON.stringify(payload));
 }
-let o1 = obstacle;
-let b1 = bird;
-let d = dino;
+
 
 function main() {
   if (!gameOver && gameStart) {
+    d.score = d.score + 0.025;
+    g.speed = g.speed + 0.00025;
+    o1.speed = o1.speed + 0.00025;
+    b1.speed = b1.speed + 0.000/25;
     mySound.play();
     design.clearRect(0, 0, canvas.width, canvas.height);
     draw_screen();
     background.draw();
     leaderboard.draw(design);
-    ground.draw();
-    ground.update();
+    g.draw();
+    g.update();
     o1.draw(random_pos1, random_ob);
     b1.draw(random_pos2, random_bird);
     d.game();
@@ -515,10 +504,6 @@ function change_screen() {
     document.body.style.backgroundImage = "url('graphics/endgame.png')";
     single.remove();
     form.style.display = "none";
-    score_update(dino);
-    speed_update(ground, 0.5);
-    speed_update(obstacle, 1.25);
-    speed_update(bird, 1.25);
     get_lead();
     mySound = new sound("soundtrack.mp3");
     main();
@@ -529,18 +514,14 @@ function change_screen() {
   }
   console.log("Nickname: ", nickname.value); // nickname given from the user
 }
-if (gameStart) {
-  score_update(dino);
-  speed_update(ground);
-}
 
 function died_state(context) {
   design.clearRect(0, 0, canvas.width, canvas.height);
   context.font = "80px Secular One";
   context.fillStyle = "#ffbf00";
-  let final_score = dino.score;
+  let final_score = Math.round(dino.score);
   context.fillText(final_score, 1070, 575);
-  send_lead(nickname.value, dino.score);
+  send_lead(nickname.value, final_score);
   var time_now = new Date().getTime();
   var endGame = setInterval(function () {
     let end_time = new Date().getTime();
@@ -551,8 +532,32 @@ function died_state(context) {
   }, 1000);
 }
 
+
+// CHECK CLIENT DEVICE
+function detectMob() {
+  const toMatch = [
+      /Android/i,
+      /webOS/i,
+      /iPhone/i,
+      /iPad/i,
+      /iPod/i,
+      /BlackBerry/i,
+      /Windows Phone/i
+  ];
+  
+  return toMatch.some((toMatchItem) => {
+      return navigator.userAgent.match(toMatchItem);
+  });
+}
+if(detectMob()){  // return true if user is using mobile device
+  design.clearRect(0, 0, canvas.width, canvas.height);
+  document.body.style.backgroundImage = "url('graphics/stop.png')";
+    single.remove();
+    form.style.display = "none";
+}
+
 // CLIENT SIDE EVENTS
-let clientId = null;
+
 
 single.addEventListener("click", e => {
   if (nickname.value == "") {
