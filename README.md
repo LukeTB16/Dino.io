@@ -1,7 +1,7 @@
 # DINO.IO - newest dino run game (DOCUMENTAZIONE WORK IN PROGRESS)
 ### Obbiettivo del gioco
   Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
-  il mini game dino su chrome in modalità offline.
+  il mini game offline dino su Chrome.
 ### Scopo del gioco
   Lo scopo del gioco è far sopravvivere il piccolo dinosauro, protaginista del gioco, ai vari ostacoli 
   animati, con velocità e difficoltà di gioco crescente.
@@ -21,14 +21,123 @@
     programma con tutta la logica e la grafica annessa.
     Nello specifico abbiamo una sezione iniziale in cui vengono esplicitate tutte le variabili e dichiarazioni
     necessarie (immagini, contatori ecc.).
-    In particolare, con l'oggetto 'keyboard_keys' andiamo a definire una funzione atta ad ascoltare le
-    azioni utente quali la freccia su e giù della nostra tastiera e ne identifica pressione ('keyDownHandler')
-    e rilascio ('keyUpHandler').
-  ///
-    
-    
-    Presenta necessariamente anche la struttura di connessione al server back-end
-      per l'invio di informazioni circa lo score e il nickname degli utenti.
+    #### Importanti considerazioni
+    * 'keyboard_keys': funzione per l'ascolto delle azioni utente quali la freccia su e giù della tastiera e 
+      riconoscimento della pressione ('keyDownHandler') e del rilascio ('keyUpHandler').
+      * keyDownHandler:
+        ```
+        if (jump_count >= 20) {
+          keyboard_keys.down = false;
+          keyboard_keys.up = true;
+        }    
+        ```
+        Necessario per riportare sul terreno dino per evitare che stia in aria di continuo.
+    * 'sound': funzione per la gestione dell'audio
+    * 'dino': definizione della classe dino
+      * dino.draw(design):
+       ```
+        // Frame management
+        if (Math.floor(gameFrame % shakeFrame) == 0) {  // scroll time
+          if (frameX == 7 && frameY == 1) {  // freeze dino down position
+            gameFrame--;
+          }
+          else if (frameX < this.frameCount - 1) {
+            frameX++;
+          } else {
+            frameX = 0;
+          }
+        }
+        gameFrame++;
+       ```
+       Gestione frame in base al numero di sprite disponibili (frameCount). Al tal
+       proposito vengono impostati inizialmente:
+       ```
+       let frameX = 0; // X coordinate of dino sprite
+       let frameY = 2; // Y coordinate of dino sprite
+       ```
+       Essi rappresentano le coordinate del dino nello sprite in base al tipo di movimento 
+       che deve fare.
+    * 'bird': definizione della classe bird
+      * bird.draw(rnd1):
+        ```
+        if (obstacle.x - this.x <= 300 || obstacle.x - this.x <= -300) {
+          update_delay(500, 700);
+        }
+        ```
+        Aggiornamento della distanza tra l'oggetto obstacle e bird in caso di distanza
+        ravvicinata tra i due. Ciò renderebbe impossibile creare una rotta di uscita
+        per la meccanica di dino con la conseguente perdita del game.
+    * Nella classe 'obstacle' e 'dino' è presente il richiamo della funzione 
+       'generateRandom(start, end)'.
+       ```
+       function generateRandom(min, max) { // min and max included 
+          return Math.floor(Math.random() * (max - min + 1) + min)
+       }
+       
+       // Obstacle class
+       random_ob = generateRandom(0, 1);
+       // Bird class
+       random_bird = generateRandom(0, 1);
+       ```
+       Per gestire in maniera random lo spawn di bird (la posizione) e di obstacle(la skin).
+       ```
+       // Bird class
+       if (rnd1 == 0) {
+          this.y = this.dy + 700;
+       }
+       else {
+          this.y = this.dy + 500;
+       }
+       
+       // Obstacle class
+       let image;
+       if (rnd == 0){
+          image = ob1Image;
+       }
+       else{
+          image = ob2Image;
+       }
+       ```
+    * 'checkCollision': funzione di fondamentale importanza per la gestione delle collisioni
+      tra gli oggetti presenti nel gioco. Viene usata una logica di cerchi con conseguente
+      calcolo della distanza tramite Teorema di Pitagora per la distanza tra le due forme
+      geometriche come in figura, al posto di una logica geometrica a rettangoli.
+      ![circle_collision](https://user-images.githubusercontent.com/40920894/166655997-aea0511c-2569-4380-98a8-3aaa90ffd936.PNG)
+      ```
+      function checkCollision(d1, ob, lx, ly, rad) {
+        // CIRCLE COLLISION
+        let circle1 = {
+          x: d1.x + 100,
+          y: d1.y + 140,
+          radius: 100,
+        };
+        let circle2 = {
+          x: ob.x + lx,
+          y: ob.y + ly,
+          radius: rad,
+        };
+        if (keyboard_keys.cover == true) {
+          circle1.y = circle1.y + 100;
+          circle1.x = circle1.x + 75;
+        }
+        //design.beginPath(); // DRAW - START PRINT CIRCLES
+        design.arc(circle1.x, circle1.y, circle1.radius, 50, 0, Math.PI * 2);
+        design.arc(circle2.x, circle2.y, circle2.radius, 150, 0, Math.PI * 2);
+        //design.stroke(); // DRAW - END PRINT CIRCLES
+        let dx = circle2.x - circle1.x;
+        let dy = circle2.y - circle1.y;
+        let distance = Math.sqrt(dx * dx + dy * dy);
+        let sumOfRadii = circle1.radius + circle2.radius;
+        if (distance < sumOfRadii && collision == true && gameOver == false) {
+          collision = false;
+          gameOver = true;
+        }
+       }
+       ```
+       Per maggiori dettagli: https://github.com/LukeTB16/Dino.io/tree/master/front-end/graphics/collisions
+      
+
+     
       
       
       
