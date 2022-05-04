@@ -62,11 +62,7 @@ var form = document.getElementById("form");
 var single = document.getElementById("single");
 var nickname = document.getElementById("nickname");
 var mySound;
-let g = ground;
-let o1 = obstacle;
-let b1 = bird;
-let d = dino;
-let clientId = null;
+
 
 // Define keyboard keys
 const keyboard_keys = (function () {
@@ -138,7 +134,6 @@ const dino = {
   gravity: 0.899,
   drag: 0.9,
   score: 0,
-  //lifes: 3,
   width: 300,
   height: 280,
   draw(design) {
@@ -155,7 +150,7 @@ const dino = {
       this.height // height of dino
     );
     // Frame management
-    if (Math.floor(gameFrame % shakeFrame) == 0) {
+    if (Math.floor(gameFrame % shakeFrame) == 0) {  // scroll time
       if (frameX == 7 && frameY == 1) {  // freeze dino down position
         gameFrame--;
       }
@@ -446,8 +441,6 @@ function checkCollision(d1, ob, lx, ly, rad) {
   if (distance < sumOfRadii && collision == true && gameOver == false) {
     collision = false;
     gameOver = true;
-    design.fillStyle = "red";
-    design.fillRect(0, 0, design.canvas.width, design.canvas.height);
   }
 }
 function draw_screen() {
@@ -468,7 +461,11 @@ function send_lead(nick, s) {
   }
   ws.send(JSON.stringify(payload));
 }
-
+let g = ground;
+let o1 = obstacle;
+let b1 = bird;
+let d = dino;
+let clientId = null;
 
 function main() {
   if (!gameOver && gameStart) {
