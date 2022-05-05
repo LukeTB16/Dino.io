@@ -136,10 +136,50 @@
        ```
        Per maggiori dettagli: https://github.com/LukeTB16/Dino.io/tree/master/front-end/graphics/collisions
       
-
-     
-      
-      
+    * 'main': funzione principale nella quale vengono richiamati e impostati tutti gli elementi del gioco.
+      Una volta richiamata, per poter eseguire tutti i settaggi la condizione 'gameOver' (condizione di end game)
+      deve essere 'False' mentre 'gameStart' (condizione di inizio game) deve essere 'True'. Quest'ultima si
+      verifica nel momento in cui si inserisce il nickname e si preme il bottone di submit.
+      Una volta verificate queste condizioni, vengono impostati i seguenti parametri:
+      ```
+      d.score = d.score + 0.025;
+      g.speed = g.speed + 0.00025;
+      o1.speed = o1.speed + 0.00025;
+      b1.speed = b1.speed + 0.00025;
+      ```
+      ciò per mantenere una progressiva velocità di gioco e, inserindoli nel main, gestito dall' AnimationFrame,
+      se si dovesse cambiare scheda del browser il loop si bloccherebbe interamente. Poichè se questi parametri
+      venissero gestiti da un intervallo indipendente, al cambio di scheda il loop si blocca ma lo Score, ad
+      esempio, continuerebbe ad incrementarsi.
+      Con le seguenti righe di codice:
+      ```
+      o1.draw(random_pos1, random_ob);
+      b1.draw(random_pos2, random_bird);
+      ```
+      garantiamo uno spawn della posizione X e Y dell'oggetto Bird in modo randomico e uno spawn random della X
+      e della skin dell'getto Obstacle.
+    * 'change_screen': funzione per il cambio della schermata con controllo di inserimento del nickname.
+      In particolare, vengono rimossi gli oggetti della schermata 'home', richiesta la leaderboard lato server e
+      richiamata la funzione principale 'main()'.
+      ```
+      // switch screen
+      function change_screen() {
+        if (nickname.value != "") {
+          gameStart = true;
+          document.body.style.backgroundImage = "url('graphics/endgame.png')";
+          single.remove();
+          form.style.display = "none";
+          get_lead();
+          mySound = new sound("soundtrack.mp3");
+          main();
+        }
+        else {
+          window.alert("Insert nickname first!");
+          id = cancelAnimationFrame(main);
+        }
+        console.log("Nickname: ", nickname.value); // nickname given from the user
+      }
+      ```
       
       Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
        "~Dino.io/front-end":
