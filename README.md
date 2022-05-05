@@ -180,7 +180,59 @@
         console.log("Nickname: ", nickname.value); // nickname given from the user
       }
       ```
-      
+    * 'died_state': funzione per la visualizzazione della schermata 'endgame'.
+      Semplice grafica di game-over con ritorno dello score ottenuto, il quale
+      viene inviato al server per essere memoriazato nel server. In aggiunta vi
+      è un contatore temporale indipendente (3 secondi) dopo il quale viene 
+      ricaricata la pagina.
+      ```
+      function died_state(context) {
+        design.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = "80px Secular One";
+        context.fillStyle = "#ffbf00";
+        let final_score = Math.round(dino.score);
+        context.fillText(final_score, 1070, 575);
+        send_lead(nickname.value, final_score);
+        var time_now = new Date().getTime();
+        var endGame = setInterval(function () {
+          let end_time = new Date().getTime();
+          if (end_time - time_now >= 3000) {
+            clearInterval(endGame);
+            location.reload(); // redirecting to lobby
+          }
+        }, 1000);
+      }
+      ```
+    * 'detectMob': semplice funzione per il controllo del dispoitivo che si
+      sta utilizzando, poichè per una migliore esperienza di gioco si può
+      utilizzare solo la modialità desktop.
+      ```
+      // CHECK CLIENT DEVICE
+      function detectMob() {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
+
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem);
+        });
+      }
+      if(detectMob()){  // return true if user is using mobile device
+        design.clearRect(0, 0, canvas.width, canvas.height);
+        document.body.style.backgroundImage = "url('graphics/stop.png')";
+          single.remove();
+          form.style.display = "none";
+      }
+      ```
+    
+    
+     
       Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
        "~Dino.io/front-end":
    
