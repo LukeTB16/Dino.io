@@ -230,7 +230,32 @@
           form.style.display = "none";
       }
       ```
-    
+    * 'addEvenetListener("click", e => {...});': ascolto di eventi sul button "Play", con successivo
+      invio, se viene inserito il nickname, del dato inserito al server tramite WebSockets in ascolto
+      sulla porta 8080.  
+      single.addEventListener("click", e => {
+      ```
+      let ws = new WebSocket("ws://localhost:8080"); // open parallel client channel using sockets
+      if (nickname.value == "") {
+        window.alert("Insert nickname first!");
+      }
+      else {
+          const payload = {
+            "method": "create",
+            "clientId": clientId,
+            "nickname": nickname.value
+          }
+          ws.send(JSON.stringify(payload));
+        }
+      });
+      ```
+    * Metodi WebSockets usati: '.onmessage' e '.onclose'.
+      * '.onmessage': in base alla risposta del server abbiamo i dati sulla creazione dell'id del 
+        client (metodo: 'connect'), sulla creazione della sezione di gioco (metodo: 'create') e le 
+        informazioni sulla leadboard (metodo: 'get_lead')(le quali verranno mostrate nel corso del 
+        gioco).
+      * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
+      
     
      
       Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
