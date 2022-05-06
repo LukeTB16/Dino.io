@@ -254,9 +254,60 @@
         client (metodo: 'connect'), sulla creazione della sezione di gioco (metodo: 'create') e le 
         informazioni sulla leadboard (metodo: 'get_lead')(le quali verranno mostrate nel corso del 
         gioco).
+        // managing requests client side
+        ```
+        ws.onmessage = (message) => {
+          // response from server
+          const response = JSON.parse(message.data);
+          // connect
+          if (response.method === "connect") {
+            clientId = response.clientId;
+            console.log("Client successfully set, ID: " + clientId);
+          }
+
+          // create
+          if (response.method === "create") {
+            clientId = response.clientId;
+          }
+          if (response.method === "get_lead") {
+            let lead_list = response.leaderboard;
+            let nick_list = Object.keys(lead_list);
+            leaderboard.p_nick[0] = nick_list[nick_list.length - 1];
+            leaderboard.p_score[0] = lead_list[nick_list[nick_list.length - 1]];
+            leaderboard.p_nick[1] = nick_list[nick_list.length - 2];
+            leaderboard.p_score[1] = lead_list[nick_list[nick_list.length - 2]];
+            leaderboard.p_nick[2] = nick_list[nick_list.length - 3];
+            leaderboard.p_score[2] = lead_list[nick_list[nick_list.length - 3]];
+          }
+        };
+        ```
       * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
-      
-    
+        ```
+        ws.onclose = (msg) => {
+          const payload = {
+            "clientId": clientId
+          }
+          ws.send(JSON.stringify(payload))
+        }
+        ```
+      Abbiamo inoltre la funzione 'get_lead()' e 'send_lead(nick, s)', rispettivamente per richiedere
+      al sever la leadboard e per mandare al server lo score ottenuto dall'utente.
+      ```
+      function get_lead() {
+      const payload = {
+        "method": "get_lead"
+      }
+      ws.send(JSON.stringify(payload));
+      }
+      function send_lead(nick, s) {
+        const payload = {
+          "method": "update_lead",
+          "nickname": nick,
+          "score": Math.round(s)
+        }
+        ws.send(JSON.stringify(payload));
+      }
+       ```
      
       Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
        "~Dino.io/front-end":
