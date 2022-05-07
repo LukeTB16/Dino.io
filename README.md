@@ -1,4 +1,4 @@
-# DINO.IO - newest dino run game (DOCUMENTAZIONE WORK IN PROGRESS)
+# DINO.IO
 ### Obbiettivo del gioco
   Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
   il mini game offline dino su Chrome.
@@ -136,52 +136,348 @@
        ```
        Per maggiori dettagli: https://github.com/LukeTB16/Dino.io/tree/master/front-end/graphics/collisions
       
+    * 'main': funzione principale nella quale vengono richiamati e impostati tutti gli elementi del gioco.
+      Una volta richiamata, per poter eseguire tutti i settaggi la condizione 'gameOver' (condizione di end game)
+      deve essere 'False' mentre 'gameStart' (condizione di inizio game) deve essere 'True'. Quest'ultima si
+      verifica nel momento in cui si inserisce il nickname e si preme il bottone di submit.
+      Una volta verificate queste condizioni, vengono impostati i seguenti parametri:
+      ```
+      d.score = d.score + 0.025;
+      g.speed = g.speed + 0.00025;
+      o1.speed = o1.speed + 0.00025;
+      b1.speed = b1.speed + 0.00025;
+      ```
+      ciò per mantenere una progressiva velocità di gioco e, inserindoli nel main, gestito dall' AnimationFrame,
+      se si dovesse cambiare scheda del browser il loop si bloccherebbe interamente. Poichè se questi parametri
+      venissero gestiti da un intervallo indipendente, al cambio di scheda il loop si blocca ma lo Score, ad
+      esempio, continuerebbe ad incrementarsi.
+      Con le seguenti righe di codice:
+      ```
+      o1.draw(random_pos1, random_ob);
+      b1.draw(random_pos2, random_bird);
+      ```
+      garantiamo uno spawn della posizione X e Y dell'oggetto Bird in modo randomico e uno spawn random della X
+      e della skin dell'getto Obstacle.
+    * 'change_screen': funzione per il cambio della schermata con controllo di inserimento del nickname.
+      In particolare, vengono rimossi gli oggetti della schermata 'home', richiesta la leaderboard lato server e
+      richiamata la funzione principale 'main()'.
+      ```
+      // switch screen
+      function change_screen() {
+        if (nickname.value != "") {
+          gameStart = true;
+          document.body.style.backgroundImage = "url('graphics/endgame.png')";
+          single.remove();
+          form.style.display = "none";
+          get_lead();
+          mySound = new sound("soundtrack.mp3");
+          main();
+        }
+        else {
+          window.alert("Insert nickname first!");
+          id = cancelAnimationFrame(main);
+        }
+        console.log("Nickname: ", nickname.value); // nickname given from the user
+      }
+      ```
+    * 'died_state': funzione per la visualizzazione della schermata 'endgame'.
+      Semplice grafica di game-over con ritorno dello score ottenuto, il quale
+      viene inviato al server per essere memoriazato nel server. In aggiunta vi
+      è un contatore temporale indipendente (3 secondi) dopo il quale viene 
+      ricaricata la pagina.
+      ```
+      function died_state(context) {
+        design.clearRect(0, 0, canvas.width, canvas.height);
+        context.font = "80px Secular One";
+        context.fillStyle = "#ffbf00";
+        let final_score = Math.round(dino.score);
+        context.fillText(final_score, 1070, 575);
+        send_lead(nickname.value, final_score);
+        var time_now = new Date().getTime();
+        var endGame = setInterval(function () {
+          let end_time = new Date().getTime();
+          if (end_time - time_now >= 3000) {
+            clearInterval(endGame);
+            location.reload(); // redirecting to lobby
+          }
+        }, 1000);
+      }
+      ```
+    * 'detectMob': semplice funzione per il controllo del dispoitivo che si
+      sta utilizzando, poichè per una migliore esperienza di gioco si può
+      utilizzare solo la modialità desktop.
+      ```
+      // CHECK CLIENT DEVICE
+      function detectMob() {
+        const toMatch = [
+            /Android/i,
+            /webOS/i,
+            /iPhone/i,
+            /iPad/i,
+            /iPod/i,
+            /BlackBerry/i,
+            /Windows Phone/i
+        ];
 
-     
-      
-      
-      
-      Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
-       "~Dino.io/front-end":
+        return toMatch.some((toMatchItem) => {
+            return navigator.userAgent.match(toMatchItem);
+        });
+      }
+      if(detectMob()){  // return true if user is using mobile device
+        design.clearRect(0, 0, canvas.width, canvas.height);
+        document.body.style.backgroundImage = "url('graphics/stop.png')";
+          single.remove();
+          form.style.display = "none";
+      }
+      ```
+    * 'addEvenetListener("click", e => {...});': ascolto di eventi sul button "Play", con successivo
+      invio, se viene inserito il nickname, del dato inserito al server tramite WebSockets in ascolto
+      sulla porta 8080.  
+      single.addEventListener("click", e => {
+      ```
+      let ws = new WebSocket("ws://localhost:8080"); // open parallel client channel using sockets
+      if (nickname.value == "") {
+        window.alert("Insert nickname first!");
+      }
+      else {
+          const payload = {
+            "method": "create",
+            "clientId": clientId,
+            "nickname": nickname.value
+          }
+          ws.send(JSON.stringify(payload));
+        }
+      });
+      ```
+    * Metodi WebSockets usati: '.onmessage' e '.onclose'.
+      * '.onmessage': in base alla risposta del server abbiamo i dati sulla creazione dell'id del 
+        client (metodo: 'connect'), sulla creazione della sezione di gioco (metodo: 'create') e le 
+        informazioni sulla leadboard (metodo: 'get_lead')(le quali verranno mostrate nel corso del 
+        gioco).
+        // managing requests client side
+        ```
+        ws.onmessage = (message) => {
+          // response from server
+          const response = JSON.parse(message.data);
+          // connect
+          if (response.method === "connect") {
+            clientId = response.clientId;
+            console.log("Client successfully set, ID: " + clientId);
+          }
+
+          // create
+          if (response.method === "create") {
+            clientId = response.clientId;
+          }
+          if (response.method === "get_lead") {
+            let lead_list = response.leaderboard;
+            let nick_list = Object.keys(lead_list);
+            leaderboard.p_nick[0] = nick_list[nick_list.length - 1];
+            leaderboard.p_score[0] = lead_list[nick_list[nick_list.length - 1]];
+            leaderboard.p_nick[1] = nick_list[nick_list.length - 2];
+            leaderboard.p_score[1] = lead_list[nick_list[nick_list.length - 2]];
+            leaderboard.p_nick[2] = nick_list[nick_list.length - 3];
+            leaderboard.p_score[2] = lead_list[nick_list[nick_list.length - 3]];
+          }
+        };
+        ```
+      * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
+        ```
+        ws.onclose = (msg) => {
+          const payload = {
+            "clientId": clientId
+          }
+          ws.send(JSON.stringify(payload))
+        }
+        ```
+      Abbiamo inoltre la funzione 'get_lead()' e 'send_lead(nick, s)', rispettivamente per richiedere
+      al sever la leadboard e per mandare al server lo score ottenuto dall'utente.
+      ```
+      function get_lead() {
+      const payload = {
+        "method": "get_lead"
+      }
+      ws.send(JSON.stringify(payload));
+      }
+      function send_lead(nick, s) {
+        const payload = {
+          "method": "update_lead",
+          "nickname": nick,
+          "score": Math.round(s)
+        }
+        ws.send(JSON.stringify(payload));
+      }
+       ```
+      Per avviare il debug front-end (necessario il pacchetto Node), bisogna digitare 
+      tramite terminale nella directory di gioco ("~Dino.io/front-end"):
+      ```
+      npx live-server 
+      ```
+ 
+ * back-end: in questa sezione o meglio cartella di gioco vi è il file 'server.js' che
+   contiene la parte server-side del gioco. Essa si occupa di mettersi in ascolto verso
+   la parte client circa le richieste che vengono fatte e mandare in risposta i dati
+   richiesti.
+   Nello specifico, nella parte iniziale vengono eseguite le opportune dichiarazioni
+   circa il richiamo di moduli necessari quali 'http', 'express', 'websocket'. 
+   Successivamente abbiamo il metodo per l'ascolto di messaggi sulla porta
+   specifica.
+   ```
+   const http = require('http');
+   const app = require('express')();
+   app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk')); // ref to main html page
+   app.listen(8081, () => console.log('Listening on 8081'))
+   const websocketServer = require('websocket').server;
+   const httpServer = http.createServer();
+   httpServer.listen(8080, () => console.log('Front-end on 8080'));
    
-       npx live-server 
-   
-   * back-end: il lato server con la gestione dei giocatori, delle informazioni
-     di gioco necessarie per la creazione di una lobby condivisa per poter giocare
-     con più persone e di conseguenza di tutte le struttura di connessione con la 
-     parte front-end (tramite WebSocets).
-     In particolare, file server.js:
-     in una prima parte abbiamo la definizione di strutture e metodi necessari alla
-     predisposizione del server alla connessione e all'ascolto degli eventi provenienti
-     dal client. In una seconda parte, la definizione di metodi per la gestione degli 
-     eventi di gioco.
-     Per avviare il debug si può sfruttare Node tramite il seguente comando nella 
-    directory "~Dino.io/back-end"
-    </li>
-  </ul>
-    
+   const wsServer = new websocketServer({
+    "httpServer": httpServer,
+   })
+   ```
+   #### Importanti considerazioni
+      * 'manage_lead(list)': funzione per il riordino della leadboard in formato
+        compatibile.
+      ```
+      function manage_lead(list) {
+        let sortable = [];
+        for (let e in list) {
+            sortable.push([e, list[e]]);
+        }
+        for (let edict in list) { 
+            delete list[edict];
+        }
+
+        sortable.sort(function(a, b) {
+            return a[1] - b[1];
+        });
+        for (let i = 0; i < sortable.length; i++) {
+            list[sortable[i][0]] = sortable[i][1];
+        }
+      }
+      ```
+     * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
+        score ottenuto e gli score presenti nella leadboard. Se il nuovo score
+        registrato non è maggiore rispetto a uno di quelli già presenti non viene
+        considerato. Questo risparmia spazio in memoria e tempo di elaborazione
+        circa il riordino dei dati.
+        ```
+        function check_score(list, s){
+          let keys = Object.keys(list);
+          for (let i = 0; i < keys.length; i++) {
+              if (s > list[keys[i]]) { 
+                  return true;
+              }
+          }
+          return false;
+        }
+        ```
+     * Metodo wsServer '.on("request", ...': in questa sezione vi è l'accettazione
+       delle richieste che arrivano al server e ogni richiesta viene gestita in 
+       base al tipo della stessa.
+       A tal proposito abbiamo il metodo 'on("message", ...', il quale a seconda
+       del risultato del messaggio permette di creare una sessione ('create'), 
+       ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
+       ```
+       const connection = request.accept(null, request.origin);
+       connection.on("message", message => {
+        const result = JSON.parse(message.utf8Data); // message.utf8Data IF give errors
+        // request from user to create a new game
+        if (result.method == "create") {
+            console.log(result.nickname, "ha richiesto al server -> CREATE LOBBY");
+            const clientId = result.clientId;
+            const nickname = result.nickname;
+            const score =  result.score;
+            try{
+                games[clientId] = {
+                    'clientId': clientId,
+                    'nickname': nickname
+                };
+            }
+            catch(e){
+                console.log("Problemi con l'aggiunta della lobby...", e.code, e.message);
+            }
+            connection.on("close", () => {
+                delete games[clientId];
+                console.log(clientId, " ha chiuso la connessione !");
+            });
+            console.log("Lobby attuali...");
+            console.log(games);
+            const payLoad = {
+                "method": "create",
+                "clientId": clientId
+            }
+            const con = clients[clientId].connection;
+            con.send(JSON.stringify(payLoad));
+        }
+        if (result.method == "get_lead") {
+            const payLoad = {
+                "method": "get_lead",
+                "leaderboard": leaderboard
+            }
+            const con = clients[clientId].connection;
+            con.send(JSON.stringify(payLoad));
+        }
+        if (result.method == "update_lead") {
+            const nickname = result.nickname;
+            const score = result.score;
+            if (Object.keys(leaderboard).length < 3) {
+                leaderboard[nickname] = score;
+                up_lead = manage_lead(leaderboard);
+            }
+            else{
+                if (check_score(leaderboard, score)) { 
+                    leaderboard[nickname] = score;
+                    up_lead = manage_lead(leaderboard);
+                }
+            }
+                console.log(leaderboard);
+            }
+        }
+       );
+       ```
+       Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
+       dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
+       rete).
+       Per risponde al client creando la connessione e relativo clientId
+       vi è un 'payLoad' apposito.
+       ```
+       // generate a new clientId
+        const clientId = id_guid();
+        clients[clientId] = {
+            "connection": connection
+        }
+        // send back response to client
+        const payLoad = {
+            "method": "connect",
+            "clientId": clientId
+        }
+        // send back the client connect
+        connection.send(JSON.stringify(payLoad));
+       ```
+    * 'id_guid': per la generazione di un id unico generato in modo randomico
+      ad ogni sessione ho sfruttato una sofisticata funzione matematica che ho 
+      trovato su un noto blog online, di cui segnalo la fonte.
+      ```
+      const id_guid = () => {
+        var firstPart = (Math.random() * 46656) | 0;
+        var secondPart = (Math.random() * 46656) | 0;
+        firstPart = ("000" + firstPart.toString(36)).slice(-3);
+        secondPart = ("000" + secondPart.toString(36)).slice(-3);
+        return firstPart + secondPart;
+      }
+      ```
+      Riferimento: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
+  * Per avviare il debug back-end (necessario il pacchetto Node), bisogna digitare 
+      tramite terminale nella directory di gioco ("~Dino.io/back-end"):
+      ```
       npx nodemon server.js
+      ```
     
-  <h2>Package utilizzati</h2>
-  <div>
-    NODEMON: https://www.npmjs.com/package/nodemon<br>
-    NPX: https://www.npmjs.com/package/npx
-    <br>Documentazione lato server:
+ ### Package utilizzati
+    nodemon: https//www.npmjs.com/package/nodemon
+    npx: https://www.npmjs.com/package/npx
+ ### Documentazione lato server:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
-  </div>
-  <h2>Sviluppo</h2>
-  <div>
-    L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
-    aggiornamento della documentazione.<br>
-    Update - 05/04
-    Localizzato il problema, sto lavorando sulla JOIN.<br>
-    Update - 07/04
-    Problema lato server risolto, completo il lato server.<br>
-    Update - 20/04
-    Rimosso multiplayer, lato server completato.<br>
-    Update - 29/04
-    Sistemata la logica delle collisioni, finalizzando alcuni aspetti.
-    DA MODIFICARE: adattamento finestra, spawn nemici.
-</div>
-</div>
+
   
