@@ -468,8 +468,8 @@
       }
       ```
       Riferimento: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
-  * Per avviare il debug front-end (necessario il pacchetto Node), bisogna digitare 
-      tramite terminale nella directory di gioco ("~Dino.io/front-end"):
+  * Per avviare il debug back-end (necessario il pacchetto Node), bisogna digitare 
+      tramite terminale nella directory di gioco ("~Dino.io/back-end"):
       ```
       npx nodemon server.js
       ```
