@@ -472,7 +472,7 @@ function main() {
     d.score = d.score + 0.025;
     g.speed = g.speed + 0.00025;
     o1.speed = o1.speed + 0.00025;
-    b1.speed = b1.speed + 0.000/25;
+    b1.speed = b1.speed + 0.00025;
     mySound.play();
     design.clearRect(0, 0, canvas.width, canvas.height);
     draw_screen();
@@ -593,32 +593,6 @@ ws.onmessage = (message) => {
     leaderboard.p_nick[2] = nick_list[nick_list.length - 3];
     leaderboard.p_score[2] = lead_list[nick_list[nick_list.length - 3]];
   }
-  /*
-  // join
-  if (response.method === "join") {
-    if(response.status == 'in a lobby') {
-      node.nodeValue = "YOU NOW ARE IN A LOBBY, MATCH WILL START IN 3 SECONDS...";
-      var time_now = new Date().getTime();
-      var startGame = setInterval(function () {
-        var end_time = new Date().getTime();
-        if (end_time - time_now >= 3000) {
-          clearInterval(startGame);
-          change_screen();
-        }
-      }, 1000);
-    }
-    else if(response.status == 'already in a lobby'){
-      node.nodeValue = "ALREADY IN THIS LOBBY";
-    }
-    else if(response.status == 'lobby is full'){
-      node.nodeValue = "LOBBY IS FULL";
-    }
-    else if(response.status == 'lobby not found'){
-      node.nodeValue = "WRONG LOBBY CODE";
-    }
-    
-  }
-  */
 };
 
 ws.onclose = (msg) => {
