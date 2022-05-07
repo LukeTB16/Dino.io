@@ -308,48 +308,176 @@
         ws.send(JSON.stringify(payload));
       }
        ```
-     
-      Per avviare il debug si può sfruttare Node tramite il comando nella directory di gioco
-       "~Dino.io/front-end":
+      Per avviare il debug front-end (necessario il pacchetto Node), bisogna digitare 
+      tramite terminale nella directory di gioco ("~Dino.io/front-end"):
+      ```
+      npx live-server 
+      ```
+ 
+ * back-end: in questa sezione o meglio cartella di gioco vi è il file 'server.js' che
+   contiene la parte server-side del gioco. Essa si occupa di mettersi in ascolto verso
+   la parte client circa le richieste che vengono fatte e mandare in risposta i dati
+   richiesti.
+   Nello specifico, nella parte iniziale vengono eseguite le opportune dichiarazioni
+   circa il richiamo di moduli necessari quali 'http', 'express', 'websocket'. 
+   Successivamente abbiamo il metodo per l'ascolto di messaggi sulla porta
+   specifica.
+   ```
+   const http = require('http');
+   const app = require('express')();
+   app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk')); // ref to main html page
+   app.listen(8081, () => console.log('Listening on 8081'))
+   const websocketServer = require('websocket').server;
+   const httpServer = http.createServer();
+   httpServer.listen(8080, () => console.log('Front-end on 8080'));
    
-       npx live-server 
-   
-   * back-end: il lato server con la gestione dei giocatori, delle informazioni
-     di gioco necessarie per la creazione di una lobby condivisa per poter giocare
-     con più persone e di conseguenza di tutte le struttura di connessione con la 
-     parte front-end (tramite WebSocets).
-     In particolare, file server.js:
-     in una prima parte abbiamo la definizione di strutture e metodi necessari alla
-     predisposizione del server alla connessione e all'ascolto degli eventi provenienti
-     dal client. In una seconda parte, la definizione di metodi per la gestione degli 
-     eventi di gioco.
-     Per avviare il debug si può sfruttare Node tramite il seguente comando nella 
-    directory "~Dino.io/back-end"
-    </li>
-  </ul>
-    
+   const wsServer = new websocketServer({
+    "httpServer": httpServer,
+   })
+   ```
+   #### Importanti considerazioni
+      * 'manage_lead(list)': funzione per il riordino della leadboard in formato
+        compatibile.
+      ```
+      function manage_lead(list) {
+        let sortable = [];
+        for (let e in list) {
+            sortable.push([e, list[e]]);
+        }
+        for (let edict in list) { 
+            delete list[edict];
+        }
+
+        sortable.sort(function(a, b) {
+            return a[1] - b[1];
+        });
+        for (let i = 0; i < sortable.length; i++) {
+            list[sortable[i][0]] = sortable[i][1];
+        }
+      }
+      ```
+     * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
+        score ottenuto e gli score presenti nella leadboard. Se il nuovo score
+        registrato non è maggiore rispetto a uno di quelli già presenti non viene
+        considerato. Questo risparmia spazio in memoria e tempo di elaborazione
+        circa il riordino dei dati.
+        ```
+        function check_score(list, s){
+          let keys = Object.keys(list);
+          for (let i = 0; i < keys.length; i++) {
+              if (s > list[keys[i]]) { 
+                  return true;
+              }
+          }
+          return false;
+        }
+        ```
+     * Metodo wsServer '.on("request", ...': in questa sezione vi è l'accettazione
+       delle richieste che arrivano al server e ogni richiesta viene gestita in 
+       base al tipo della stessa.
+       A tal proposito abbiamo il metodo 'on("message", ...', il quale a seconda
+       del risultato del messaggio permette di creare una sessione ('create'), 
+       ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
+       ```
+       const connection = request.accept(null, request.origin);
+       connection.on("message", message => {
+        const result = JSON.parse(message.utf8Data); // message.utf8Data IF give errors
+        // request from user to create a new game
+        if (result.method == "create") {
+            console.log(result.nickname, "ha richiesto al server -> CREATE LOBBY");
+            const clientId = result.clientId;
+            const nickname = result.nickname;
+            const score =  result.score;
+            try{
+                games[clientId] = {
+                    'clientId': clientId,
+                    'nickname': nickname
+                };
+            }
+            catch(e){
+                console.log("Problemi con l'aggiunta della lobby...", e.code, e.message);
+            }
+            connection.on("close", () => {
+                delete games[clientId];
+                console.log(clientId, " ha chiuso la connessione !");
+            });
+            console.log("Lobby attuali...");
+            console.log(games);
+            const payLoad = {
+                "method": "create",
+                "clientId": clientId
+            }
+            const con = clients[clientId].connection;
+            con.send(JSON.stringify(payLoad));
+        }
+        if (result.method == "get_lead") {
+            const payLoad = {
+                "method": "get_lead",
+                "leaderboard": leaderboard
+            }
+            const con = clients[clientId].connection;
+            con.send(JSON.stringify(payLoad));
+        }
+        if (result.method == "update_lead") {
+            const nickname = result.nickname;
+            const score = result.score;
+            if (Object.keys(leaderboard).length < 3) {
+                leaderboard[nickname] = score;
+                up_lead = manage_lead(leaderboard);
+            }
+            else{
+                if (check_score(leaderboard, score)) { 
+                    leaderboard[nickname] = score;
+                    up_lead = manage_lead(leaderboard);
+                }
+            }
+                console.log(leaderboard);
+            }
+        }
+       );
+       ```
+       Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
+       dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
+       rete).
+       Per risponde al client creando la connessione e relativo clientId
+       vi è un 'payLoad' apposito.
+       ```
+       // generate a new clientId
+        const clientId = id_guid();
+        clients[clientId] = {
+            "connection": connection
+        }
+        // send back response to client
+        const payLoad = {
+            "method": "connect",
+            "clientId": clientId
+        }
+        // send back the client connect
+        connection.send(JSON.stringify(payLoad));
+       ```
+    * 'id_guid': per la generazione di un id unico generato in modo randomico
+      ad ogni sessione ho sfruttato una sofisticata funzione matematica che ho 
+      trovato su un noto blog online, di cui segnalo la fonte.
+      ```
+      const id_guid = () => {
+        var firstPart = (Math.random() * 46656) | 0;
+        var secondPart = (Math.random() * 46656) | 0;
+        firstPart = ("000" + firstPart.toString(36)).slice(-3);
+        secondPart = ("000" + secondPart.toString(36)).slice(-3);
+        return firstPart + secondPart;
+      }
+      ```
+      Riferimento: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
+   Per avviare il debug front-end (necessario il pacchetto Node), bisogna digitare 
+      tramite terminale nella directory di gioco ("~Dino.io/front-end"):
+      ```
       npx nodemon server.js
+      ```
     
-  <h2>Package utilizzati</h2>
-  <div>
-    NODEMON: https://www.npmjs.com/package/nodemon<br>
-    NPX: https://www.npmjs.com/package/npx
-    <br>Documentazione lato server:
+  * Package utilizzati
+    nodemon: https//www.npmjs.com/package/nodemon
+    npx: https://www.npmjs.com/package/npx
+  * Documentazione lato server:
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
-  </div>
-  <h2>Sviluppo</h2>
-  <div>
-    L'applicazione è ancora in fase di sviluppo e miglioramento. Seguiranno nuovi commit e successivo
-    aggiornamento della documentazione.<br>
-    Update - 05/04
-    Localizzato il problema, sto lavorando sulla JOIN.<br>
-    Update - 07/04
-    Problema lato server risolto, completo il lato server.<br>
-    Update - 20/04
-    Rimosso multiplayer, lato server completato.<br>
-    Update - 29/04
-    Sistemata la logica delle collisioni, finalizzando alcuni aspetti.
-    DA MODIFICARE: adattamento finestra, spawn nemici.
-</div>
-</div>
+
   
