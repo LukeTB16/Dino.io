@@ -153,7 +153,7 @@
     nodemon: https//www.npmjs.com/package/nodemon
     npx: https://www.npmjs.com/package/npx
  ### Documentazione
-    Gestione input da tastiera
+   Gestione input da tastiera
     ```
     https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
     ```
