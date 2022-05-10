@@ -154,15 +154,15 @@
     npx: https://www.npmjs.com/package/npx
  ### Documentazione
    Gestione input da tastiera
-    ```
-    https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
-    ```
-    WebSockets
-    ```
-    https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
-    ```
-    Canvas
-    ```
-    https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API?retiredLocale=it
-    ```
+   ```
+   https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+   ```
+   WebSockets
+   ```
+   https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
+   ```
+   Canvas
+   ```
+   https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API?retiredLocale=it
+   ```
   
