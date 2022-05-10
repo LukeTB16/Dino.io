@@ -135,7 +135,7 @@
        A tal proposito abbiamo il metodo 'on("message", ...', il quale a seconda
        del risultato del messaggio permette di creare una sessione ('create'), 
        ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
-       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L45
+       https://github.com/LukeTB16/Dino.io/blob/7a6acbad6c4e159db8fc5943987d5ac7a5644bde/back-end/server.js#L42
        Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
        dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
        rete).
