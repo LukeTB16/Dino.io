@@ -477,7 +477,7 @@
  ### Package utilizzati
     nodemon: https//www.npmjs.com/package/nodemon
     npx: https://www.npmjs.com/package/npx
- ### Documentazione lato server:
+ ### Documentazione lato server
     https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
 
   
