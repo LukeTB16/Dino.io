@@ -90,9 +90,9 @@
       è un contatore temporale indipendente (3 secondi) dopo il quale viene 
       ricaricata la pagina.
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L515
-    * 'detectMob': semplice funzione per il controllo del dispoitivo che si
-      sta utilizzando, poichè per una migliore esperienza di gioco si può
-      utilizzare solo la modialità desktop.
+    * 'detectMob': per controllare che il dispositivo non sia mobile ma desktop (poichè per una migliore esperienza 
+      di gioco si può utilizzare solo la modialità desktop) ho sfruttato questa funziona trovata online di cui lascio
+      il riferimento, https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser.
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L534
     * 'addEvenetListener("click", e => {...});': ascolto di eventi sul button "Play", con successivo
       invio, se viene inserito il nickname, del dato inserito al server tramite WebSockets in ascolto
@@ -152,7 +152,9 @@
  ### Package utilizzati
     nodemon: https//www.npmjs.com/package/nodemon
     npx: https://www.npmjs.com/package/npx
- ### Documentazione lato server
-    https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
+ ### Documentazione
+    Gestione input da tastiera - https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key
+    WebSockets - https://developer.mozilla.org/en-US/docs/Web/API/WebSocket?retiredLocale=it
+    Canvas - https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API?retiredLocale=it
 
   
