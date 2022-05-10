@@ -25,14 +25,14 @@
   npx nodemon server.js
   ```
 ### Struttura logica
-  L'applicazione web è così strutturata:
-  * front-end: in questa sezione o meglio cartella di gioco vi è il file 'index.html' che contiene la
+## Front-End
+  In questa sezione o meglio cartella di gioco vi è il file 'index.html' che contiene la
     struttura del sito per cui integra con il tag 'canvas' il gioco vero e proprio. Inoltre vi è un 
     form con campo di testo e bottone di tipo 'submit'. Aprendo il file 'index.js' abbiamo il core del 
     programma con tutta la logica e la grafica annessa.
     Nello specifico abbiamo una sezione iniziale in cui vengono esplicitate tutte le variabili e dichiarazioni
     necessarie (immagini, contatori ecc.).
-    #### Importanti considerazioni
+  * Importanti considerazioni
     * 'keyboard_keys': funzione per l'ascolto delle azioni utente quali la freccia su e giù della tastiera e 
       riconoscimento della pressione ('keyDownHandler') e del rilascio ('keyUpHandler').
       * keyDownHandler:
@@ -46,6 +46,8 @@
        Gestione frame in base al numero di sprite disponibili (frameCount). Al tal
        proposito vengono impostati inizialmente a 0 il frameX e a 2 il frameY (le rispettive coordinate nello 
        sprite, in base al loro movimento).
+       Purtroppo però in base all'hardware su cui viene avviato il gioco, la CPU gestisce a modo suo il frame
+       rate per cui sarebbe necessario ordinare un impostazione di default che la CPU deve rispettare.
     * 'bird': definizione della classe bird
       * bird.draw(rnd1):
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L301
@@ -63,7 +65,6 @@
       ![circle_collision](https://user-images.githubusercontent.com/40920894/166655997-aea0511c-2569-4380-98a8-3aaa90ffd936.PNG)
       function checkCollision(d1, ob, lx, ly, rad) {
       Per maggiori dettagli: https://github.com/LukeTB16/Dino.io/tree/master/front-end/graphics/collisions
-      
     * 'main': funzione principale nella quale vengono richiamati e impostati tutti gli elementi del gioco.
       Una volta richiamata, per poter eseguire tutti i settaggi la condizione 'gameOver' (condizione di end game)
       deve essere 'False' mentre 'gameStart' (condizione di inizio game) deve essere 'True'. Quest'ultima si
@@ -110,42 +111,43 @@
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L450
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L456
  
- * back-end: in questa sezione o meglio cartella di gioco vi è il file 'server.js' che
-   contiene la parte server-side del gioco. Essa si occupa di mettersi in ascolto verso
-   la parte client circa le richieste che vengono fatte e mandare in risposta i dati
-   richiesti.
-   Nello specifico, nella parte iniziale vengono eseguite le opportune dichiarazioni
-   circa il richiamo di moduli necessari quali 'http', 'websocket'. 
-   Successivamente abbiamo il metodo per l'ascolto di messaggi sulla porta
-   specifica.
-   https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L4
-   #### Importanti considerazioni
-      * 'manage_lead(list)': funzione per il riordino della leadboard in formato
-        compatibile.
-      https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L15
-     * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
-        score ottenuto e gli score presenti nella leadboard. Se il nuovo score
-        registrato non è maggiore rispetto a uno di quelli già presenti non viene
-        considerato. Questo risparmia spazio in memoria e tempo di elaborazione
-        circa il riordino dei dati.
-        https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L32
-     * Metodo wsServer '.on("request", ...': in questa sezione vi è l'accettazione
-       delle richieste che arrivano al server e ogni richiesta viene gestita in 
-       base al tipo della stessa.
-       A tal proposito abbiamo il metodo 'on("message", ...', il quale a seconda
-       del risultato del messaggio permette di creare una sessione ('create'), 
-       ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
-       https://github.com/LukeTB16/Dino.io/blob/7a6acbad6c4e159db8fc5943987d5ac7a5644bde/back-end/server.js#L42
-       Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
-       dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
-       rete).
-       Per risponde al client creando la connessione e relativo clientId
-       vi è un 'payLoad' apposito.
-    * 'id_guid': per la generazione di un id unico generato in modo randomico
-      ad ogni sessione ho sfruttato una sofisticata funzione matematica che ho 
-      trovato su un noto blog online, di cui segnalo la fonte.
-      https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L119
-      Riferimento: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
+## Back-End
+   In questa sezione o meglio cartella di gioco vi è il file 'server.js' che
+     contiene la parte server-side del gioco. Essa si occupa di mettersi in ascolto verso
+     la parte client circa le richieste che vengono fatte e mandare in risposta i dati
+     richiesti.
+     Nello specifico, nella parte iniziale vengono eseguite le opportune dichiarazioni
+     circa il richiamo di moduli necessari quali 'http', 'websocket'. 
+     Successivamente abbiamo il metodo per l'ascolto di messaggi sulla porta
+     specifica.
+     https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L4
+   * Importanti considerazioni
+       * 'manage_lead(list)': funzione per il riordino della leadboard in formato
+          compatibile.
+        https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L15
+       * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
+          score ottenuto e gli score presenti nella leadboard. Se il nuovo score
+          registrato non è maggiore rispetto a uno di quelli già presenti non viene
+          considerato. Questo risparmia spazio in memoria e tempo di elaborazione
+          circa il riordino dei dati.
+          https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L32
+       * Metodo wsServer '.on("request", ...': in questa sezione vi è l'accettazione
+         delle richieste che arrivano al server e ogni richiesta viene gestita in 
+         base al tipo della stessa.
+         A tal proposito abbiamo il metodo 'on("message", ...', il quale a seconda
+         del risultato del messaggio permette di creare una sessione ('create'), 
+         ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
+         https://github.com/LukeTB16/Dino.io/blob/7a6acbad6c4e159db8fc5943987d5ac7a5644bde/back-end/server.js#L42
+         Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
+         dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
+         rete).
+         Per risponde al client creando la connessione e relativo clientId
+         vi è un 'payLoad' apposito.
+      * 'id_guid': per la generazione di un id unico generato in modo randomico
+        ad ogni sessione ho sfruttato una sofisticata funzione matematica che ho 
+        trovato su un noto blog online, di cui segnalo la fonte.
+        https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L119
+        Riferimento: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
     
  ### Package utilizzati
     nodemon: https//www.npmjs.com/package/nodemon
