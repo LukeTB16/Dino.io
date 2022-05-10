@@ -124,8 +124,8 @@
      specifica.
      https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L4
    * Importanti considerazioni
-       * 'manage_lead(list)': funzione per il riordino della leadboard, in formato
-          compatibile.
+       * 'manage_lead(list)': funzione per il riordino della leadboard in formato compatibile 
+         (dict -> list -> riordino -> dict).
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L15
        * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
           score ottenuto e gli score presenti nella leadboard. Se il nuovo score
