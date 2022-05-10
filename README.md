@@ -53,7 +53,9 @@
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L301
         Aggiornamento della distanza tra l'oggetto obstacle e bird in caso di distanza
         ravvicinata tra i due. Ciò renderebbe impossibile creare una rotta di uscita
-        per la meccanica di dino con la conseguente perdita del game.
+        per la meccanica di dino con la conseguente perdita del game. Tuttavia questa funzione
+        non risulta sempre efficace per cui sarebbe necessario eseguire un controllo accurato sulla distanza
+        tra gli oggetti prima del successivo spawn.
     * Nella classe 'obstacle' e 'dino' è presente il richiamo della funzione 
        'generateRandom(start, end)'.
        https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L411
@@ -122,7 +124,7 @@
      specifica.
      https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L4
    * Importanti considerazioni
-       * 'manage_lead(list)': funzione per il riordino della leadboard in formato
+       * 'manage_lead(list)': funzione per il riordino della leadboard, in formato
           compatibile.
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L15
        * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
