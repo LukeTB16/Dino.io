@@ -57,7 +57,7 @@ var cover_count = 0;
 var id = null;
 var gameStart = false;
 var pos;
-let ws = new WebSocket("ws://localhost:8080"); // open parallel client channel using sockets
+let ws = new WebSocket("ws://192.168.100.2:3000"); // open parallel client channel using sockets
 var form = document.getElementById("form");
 var single = document.getElementById("single");
 var nickname = document.getElementById("nickname");

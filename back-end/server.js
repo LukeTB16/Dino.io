@@ -1,10 +1,7 @@
 const http = require('http');
-const app = require('express')();
-app.get("/", (req, res) => res.sendFile(__dirname + '/lobby.html.lnk')); // ref to main html page
-app.listen(8081, () => console.log('Listening on 8081'))
 const websocketServer = require('websocket').server;
 const httpServer = http.createServer();
-httpServer.listen(8080, () => console.log('Front-end on 8080'));
+httpServer.listen(8080, () => console.log('Listening on port 8080'));
 
 // hashmap clients
 const clients = {};
@@ -117,7 +114,7 @@ wsServer.on("request", request => {
     connection.send(JSON.stringify(payLoad));
 })
 
-// generate unique id
+// Generate unique id
 // ref: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
 const id_guid = () => {
     var firstPart = (Math.random() * 46656) | 0;
