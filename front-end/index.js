@@ -57,7 +57,7 @@ var cover_count = 0;
 var id = null;
 var gameStart = false;
 var pos;
-let ws = new WebSocket("ws://192.168.100.2:3000"); // open parallel client channel using sockets
+let ws = new WebSocket('ws://localhost:8080'); // open parallel client channel using sockets
 var form = document.getElementById("form");
 var single = document.getElementById("single");
 var nickname = document.getElementById("nickname");
@@ -461,6 +461,7 @@ function send_lead(nick, s) {
   }
   ws.send(JSON.stringify(payload));
 }
+
 let g = ground;
 let o1 = obstacle;
 let b1 = bird;
@@ -554,7 +555,6 @@ if(detectMob()){  // return true if user is using mobile device
 }
 
 // CLIENT SIDE EVENTS
-
 
 single.addEventListener("click", e => {
   if (nickname.value == "") {

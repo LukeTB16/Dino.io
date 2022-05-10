@@ -12,20 +12,20 @@ const wsServer = new websocketServer({
     "httpServer": httpServer,
 })
 
-function manage_lead(list) {
+function manage_lead(diz) {
     let sortable = [];
-    for (let e in list) {
-        sortable.push([e, list[e]]);
+    for (let e in diz) {
+        sortable.push([e, diz[e]]); // insert elements in new list
     }
-    for (let edict in list) { 
-        delete list[edict];
+    for (let edict in diz) { 
+        delete diz[edict];  // remove previous elements
     }
 
     sortable.sort(function(a, b) {
-        return a[1] - b[1];
+        return a[1] - b[1];  // list sorting
     });
     for (let i = 0; i < sortable.length; i++) {
-        list[sortable[i][0]] = sortable[i][1];
+        diz[sortable[i][0]] = sortable[i][1];  // insert new elements in dict
     }
 }
 
@@ -114,7 +114,7 @@ wsServer.on("request", request => {
     connection.send(JSON.stringify(payLoad));
 })
 
-// Generate unique id
+// generate unique id
 // ref: https://stackoverflow.com/questions/6248666/how-to-generate-short-uid-like-ax4j9z-in-js
 const id_guid = () => {
     var firstPart = (Math.random() * 46656) | 0;
