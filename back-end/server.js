@@ -20,12 +20,11 @@ function manage_lead(diz) {
     for (let edict in diz) { 
         delete diz[edict];  // remove previous elements
     }
-
     sortable.sort(function(a, b) {
         return a[1] - b[1];  // list sorting
     });
-    for (let i = 0; i < sortable.length; i++) {
-        diz[sortable[i][0]] = sortable[i][1];  // insert new elements in dict
+    for (let i = 1; i <= sortable.length; i++) {
+        diz[sortable[i-1][0]] = sortable[sortable.length - i][1];  // insert new elements in dict
     }
 }
 

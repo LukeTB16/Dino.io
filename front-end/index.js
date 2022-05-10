@@ -586,12 +586,17 @@ ws.onmessage = (message) => {
   if (response.method === "get_lead") {
     let lead_list = response.leaderboard;
     let nick_list = Object.keys(lead_list);
-    leaderboard.p_nick[0] = nick_list[nick_list.length - 1];
-    leaderboard.p_score[0] = lead_list[nick_list[nick_list.length - 1]];
-    leaderboard.p_nick[1] = nick_list[nick_list.length - 2];
-    leaderboard.p_score[1] = lead_list[nick_list[nick_list.length - 2]];
-    leaderboard.p_nick[2] = nick_list[nick_list.length - 3];
-    leaderboard.p_score[2] = lead_list[nick_list[nick_list.length - 3]];
+    lead_list_filtered = lead_list.filter(function(x) {
+      return x !== undefined;
+    });
+    nick_list_filtered = nick_list.filter(function(x) {
+      return x !== undefined;
+    });
+    for (let i = 0; i < nick_list.length; i++){
+      leaderboard.p_nick[i] = nick_list_filtered[i];
+      leaderboard.p_score[i] = lead_list_filtered[nick_list[i]];
+      
+    }
   }
 };
 
