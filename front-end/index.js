@@ -45,7 +45,7 @@ var collision = true;
 let frameX = 0; // X coordinate of dino sprite
 let frameY = 2; // Y coordinate of dino sprite
 let gameFrame = 0;
-let shakeFrame = 5; // frame number of shake
+let shakeFrame = 3; // frame number of shake
 let jump_counter = 0;
 var random_bird;
 var random_ob;
@@ -342,8 +342,8 @@ const leaderboard = {
   y: -20,
   width: 100,
   height: 100,
-  p_nick: [],
-  p_score: [],
+  p_nick: ['-','-','-'],
+  p_score: [0, 0, 0],
   draw(context) {
     design.drawImage(
       leaderboardImage,
@@ -588,7 +588,7 @@ ws.onmessage = (message) => {
     let nick_list = Object.keys(lead_list);
     for (let i = 0; i < nick_list.length; i++){
       leaderboard.p_nick[i] = nick_list[i];
-      leaderboard.p_score[i] = lead_list[nick_list[i]]; 
+      leaderboard.p_score[i] = lead_list[nick_list[i]];
     }
   }
 };
