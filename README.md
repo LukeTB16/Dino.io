@@ -168,6 +168,7 @@
    https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API?retiredLocale=it
    ```
 ### Sviluppo
+ * 01/04 - Inizio sviluppo del gioco
  * 29/05 - Problemi con il lato server
  * 29/05 - Problemi lato server risolti, procedo con ultimare il gioco
  * 05/05 - Dati iniziali sulla leaderboard errati
