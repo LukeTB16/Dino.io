@@ -3,7 +3,7 @@
   Come per ogni esperienza videoludica, l'obbiettivo previsto è il puro divertimento richiamando e rinnovando
   il mini game offline dino su Chrome.
 ### Scopo del gioco
-  Lo scopo del gioco è far sopravvivere il piccolo dinosauro, protaginista del gioco, ai vari ostacoli 
+  Lo scopo del gioco è far sopravvivere il piccolo dinosauro, protagonista del gioco, ai vari ostacoli 
   animati, con velocità e difficoltà di gioco crescente.
 ### Struttura grafica  
   Nella prima schermata è presente un campo di testo e un bottone, rispettivamente per inserire il 
@@ -38,7 +38,7 @@
       * keyDownHandler:
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L81
         Necessario per riportare sul terreno dino per evitare che stia in aria di continuo.
-    * 'sound': funzione per la gestione dell'audio in quanto è presente un simpatico sottonfondo durante
+    * 'sound': funzione per la gestione dell'audio in quanto è presente un simpatico sottofondo durante
       la sessione di gioco.
     * 'dino': definizione della classe dino
       * dino.draw(design):
@@ -88,12 +88,12 @@
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L498
     * 'died_state': funzione per la visualizzazione della schermata 'endgame'.
       Semplice grafica di game-over con ritorno dello score ottenuto, il quale
-      viene inviato al server per essere memoriazato nel server. In aggiunta vi
+      viene inviato al server per essere memorizzato nel server. In aggiunta vi
       è un contatore temporale indipendente (3 secondi) dopo il quale viene 
       ricaricata la pagina.
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L515
     * 'detectMob': per controllare che il dispositivo non sia mobile ma desktop (poichè per una migliore esperienza 
-      di gioco si può utilizzare solo la modialità desktop) ho sfruttato questa funziona trovata online di cui lascio
+      di gioco si può utilizzare solo la modalità desktop) ho sfruttato questa funziona trovata online di cui lascio
       il riferimento, https://stackoverflow.com/questions/11381673/detecting-a-mobile-browser.
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L534
     * 'addEvenetListener("click", e => {...});': ascolto di eventi sul button "Play", con successivo
@@ -103,13 +103,13 @@
     * Metodi WebSockets usati: '.onmessage' e '.onclose'.
       * '.onmessage': in base alla risposta del server abbiamo i dati sulla creazione dell'id del 
         client (metodo: 'connect'), sulla creazione della sezione di gioco (metodo: 'create') e le 
-        informazioni sulla leadboard (metodo: 'get_lead')(le quali verranno mostrate nel corso del 
+        informazioni sulla leadboard: 'get_lead')(le quali verranno mostrate nel corso del 
         gioco).
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L573
       * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L598
       Abbiamo inoltre la funzione 'get_lead()' e 'send_lead(nick, s)', rispettivamente per richiedere
-      al sever la leadboard e per mandare al server lo score ottenuto dall'utente.
+      al server la leadboard e per mandare al server lo score ottenuto dall'utente.
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L450
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L456
  
@@ -127,7 +127,7 @@
        * 'manage_lead(list)': funzione per il riordino della leadboard in formato compatibile 
          (dict -> list -> riordino -> dict).
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/back-end/server.js#L15
-       * 'check_score(list, s)': importante funzione per il cofronto tra il nuovo
+       * 'check_score(list, s)': importante funzione per il confronto tra il nuovo
           score ottenuto e gli score presenti nella leadboard. Se il nuovo score
           registrato non è maggiore rispetto a uno di quelli già presenti non viene
           considerato. Questo risparmia spazio in memoria e tempo di elaborazione
@@ -141,7 +141,7 @@
          ottenere ('get_lead') e aggiornare la leaderboard('update_lead').
          https://github.com/LukeTB16/Dino.io/blob/7a6acbad6c4e159db8fc5943987d5ac7a5644bde/back-end/server.js#L42
          Ogni richiesta viene evasa con i dati richiesti 'spediti' tramite
-         dizionari che ho chiamto payLoad(la parte dati in un pacchetto di
+         dizionari che ho chiamato payLoad(la parte dati in un pacchetto di
          rete).
          Per risponde al client creando la connessione e relativo clientId
          vi è un 'payLoad' apposito.
