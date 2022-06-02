@@ -35,13 +35,13 @@
   * Importanti considerazioni
     * 'keyboard_keys': funzione per l'ascolto delle azioni utente quali la freccia su e giù della tastiera e 
       riconoscimento della pressione ('keyDownHandler') e del rilascio ('keyUpHandler').
-      * keyDownHandler:
+     * keyDownHandler:
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L81
         Necessario per riportare sul terreno dino per evitare che stia in aria di continuo.
     * 'sound': funzione per la gestione dell'audio in quanto è presente un simpatico sottofondo durante
       la sessione di gioco.
     * 'dino': definizione della classe dino
-      * dino.draw(design):
+     * dino.draw(design):
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L153
        Gestione frame in base al numero di sprite disponibili (frameCount). Al tal
        proposito vengono impostati inizialmente a 0 il frameX e a 2 il frameY (le rispettive coordinate nello 
@@ -49,7 +49,7 @@
        Purtroppo però in base all'hardware su cui viene avviato il gioco, la CPU gestisce a modo suo il frame
        rate per cui sarebbe necessario ordinare un impostazione di default che la CPU deve rispettare.
     * 'bird': definizione della classe bird
-      * bird.draw(rnd1):
+     * bird.draw(rnd1):
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L301
         Aggiornamento della distanza tra l'oggetto obstacle e bird in caso di distanza
         ravvicinata tra i due. Ciò renderebbe impossibile creare una rotta di uscita
@@ -101,12 +101,12 @@
       sulla porta 8080.  
       https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L60
     * Metodi WebSockets usati: '.onmessage' e '.onclose'.
-      * '.onmessage': in base alla risposta del server abbiamo i dati sulla creazione dell'id del 
+     * '.onmessage': in base alla risposta del server abbiamo i dati sulla creazione dell'id del 
         client (metodo: 'connect'), sulla creazione della sezione di gioco (metodo: 'create') e le 
         informazioni sulla leadboard: 'get_lead')(le quali verranno mostrate nel corso del 
         gioco).
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L573
-      * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
+     * '.onclose': viene inviato il client id dell'utente che ha chiuso la connessione.
         https://github.com/LukeTB16/Dino.io/blob/95d0497365a70c35d09a58d95ecccdf7c0136bac/front-end/index.js#L598
       Abbiamo inoltre la funzione 'get_lead()' e 'send_lead(nick, s)', rispettivamente per richiedere
       al server la leadboard e per mandare al server lo score ottenuto dall'utente.
@@ -155,6 +155,9 @@
  ### Package utilizzati
     nodemon: https//www.npmjs.com/package/nodemon
     npx: https://www.npmjs.com/package/npx
+ ### Librerie utilizzate
+    http: https://nodejs.org/api/http.html
+    websockets: https://www.npmjs.com/package/websocket
  ### Documentazione
    Gestione input da tastiera
    ```
