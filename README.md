@@ -155,9 +155,9 @@
  ### Package utilizzati
     nodemon: https//www.npmjs.com/package/nodemon
     npx: https://www.npmjs.com/package/npx
+    websockets: https://www.npmjs.com/package/websocket
  ### Librerie utilizzate
     http: https://nodejs.org/api/http.html
-    websockets: https://www.npmjs.com/package/websocket
  ### Documentazione
    Gestione input da tastiera
    ```
